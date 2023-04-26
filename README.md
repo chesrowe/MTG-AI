@@ -3,7 +3,7 @@ Generate brand new magic cards with ChatGPT and Stable Diffusion
 
 # Disclaimer
 
-This AI Magic the Gathering Card Generator is an unofficial, fan-made project created for entertainment purposes only. It is not affiliated with, endorsed, sponsored, or approved by Wizards of the Coast LLC ("Wizards"), the creator and publisher of the Magic: The Gathering trading card game.
+This AI Magic the Gathering Card Generator is an unofficial, fan-made project created for entertainment purposes only. It is not affiliated with, endorsed, sponsored, or approved by Wizards of the Coast LLC, the creator and publisher of the Magic: The Gathering trading card game.
 
 The Project utilizes artificial intelligence to generate custom MTG card designs, and the card designs, names, abilities, and any other content generated are purely fictional and not intended for use in any official MTG events, tournaments, or products. The generated cards should not be considered as real cards or official expansions of the MTG game.
 
