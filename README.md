@@ -16,7 +16,7 @@ This Project is provided "as is" and "as available" without warranties of any ki
 
 # Setup
 ### API Keys
-In the `scr_functions` script there are two macros, you will need to provide at least an openAi API key or both, they can be found here:
+In the `scr_functions` script there are two macros `OPENAI_API_KEY` and `STABILTIY_API_KEY`, you will need to provide at least an openAi API key or both, they can be found here:
 - [Stabiltiy Ai](https://dreamstudio.ai/account)
 - [openAi](https://platform.openai.com/account/api-keys)
 
