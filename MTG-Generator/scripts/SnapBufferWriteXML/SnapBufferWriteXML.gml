@@ -3,7 +3,7 @@
 /// 
 /// @jujuadams 2022-10-30
 
-function SnapBufferWriteXML(_buffer, _struct)
+function SnapBufferWrite_xml(_buffer, _struct)
 {
     var _prologStruct = _struct[$ "prolog"];
     if (is_struct(_prologStruct))
@@ -16,7 +16,7 @@ function SnapBufferWriteXML(_buffer, _struct)
             var _count = array_length(_names);
             if (_count > 0)
             {
-                buffer_write(_buffer, buffer_text, "<?xml");
+                buffer_write(_buffer, buffer_text, "<?_xml");
                 
                 var _i = 0;
                 repeat(_count)
@@ -44,13 +44,13 @@ function SnapBufferWriteXML(_buffer, _struct)
         var _i = 0;
         repeat(array_length(_children))
         {
-            __SnapToXMLBufferInner(_buffer, _children[_i], "");
+            __SnapTo_xmlBufferInner(_buffer, _children[_i], "");
             ++_i;
         }
     }
 }
 
-function __SnapToXMLBufferInner(_buffer, _struct, _indent)
+function __SnapTo_xmlBufferInner(_buffer, _struct, _indent)
 {
     buffer_write(_buffer, buffer_text, _indent);
     buffer_write(_buffer, buffer_text, "<");
@@ -99,7 +99,7 @@ function __SnapToXMLBufferInner(_buffer, _struct, _indent)
                 repeat(_count)
                 {
                     buffer_write(_buffer, buffer_u8, 13);
-                    __SnapToXMLBufferInner(_buffer, _children[_i], _indent);
+                    __SnapTo_xmlBufferInner(_buffer, _children[_i], _indent);
                     ++_i;
                 }
                 

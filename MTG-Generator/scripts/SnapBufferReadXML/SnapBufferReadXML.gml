@@ -1,13 +1,13 @@
-/// Decodes XML data stored in a buffer and outputs a sorta-JSON equivalent
+/// Decodes _xml data stored in a buffer and outputs a sorta-JSON equivalent
 ///
-/// @return Nested struct/array data that represents the contents of the XML data
+/// @return Nested struct/array data that represents the contents of the _xml data
 /// 
 /// @param buffer  Buffer to read data from
 /// @param offset  Offset in the buffer to read data from
 /// 
 /// @jujuadams 2022-10-30
 
-function SnapBufferReadXML(_buffer, _offset, _size)
+function SnapBufferRead_xml(_buffer, _offset, _size)
 {
     var _oldOffset = buffer_tell(_buffer);
     buffer_seek(_buffer, buffer_seek_start, _offset);

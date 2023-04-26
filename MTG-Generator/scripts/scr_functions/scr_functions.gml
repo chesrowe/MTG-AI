@@ -1,5 +1,6 @@
 #macro OPENAI_API_KEY ""
 #macro STABILITY_API_KEY ""
+#macro USE_DALLE false
 
 randomize();
 global.emptyStruct = {};
@@ -113,9 +114,7 @@ function get_stableDiffusion_models() {
 	var _dataJson = json_stringify(_data);
 	show_debug_message("Image data: " + _dataJson);
 
-    // Replace "your_OPENAI_API_KEY" with your actual API key
     ds_map_add(_headers, "Authorization", "Bearer " + string(STABILITY_API_KEY));
-
 
     // Send the POST request
     var _request_id = http_request(_url, "GET", _headers, _dataJson);
@@ -130,168 +129,139 @@ function get_stableDiffusion_models() {
 /// @param text The input text containing symbols
 /// @returns The output string with sprite names and color codes
 function parse_magic_symbols(text) {
-    var output = "";
-    var i = 0;
-    var len = string_length(text);
+    var _output = "";
+    var _i = 0;
+    var _len = string_length(text);
 
-    while (i < len) {
-        var current_char = string_char_at(text, i + 1);
+    while (_i < _len) {
+        var _currentChar = string_char_at(text, _i + 1);
 
-        if (current_char == "{") {
-            var next_char = string_char_at(text, i + 2);
-            var sprite_name = "";
+        if (_currentChar == "{") {
+            var _nextChar = string_char_at(text, _i + 2);
+            var _spriteName = "";
 
-            switch (next_char) {
+            switch (_nextChar) {
                 case "W":
-                    sprite_name = "spr_manaWhite";
+                    _spriteName = "spr_manaWhite";
                     break;
                 case "U":
-                    sprite_name = "spr_manaBlue";
+                    _spriteName = "spr_manaBlue";
                     break;
                 case "B":
-                    sprite_name = "spr_manaBlack";
+                    _spriteName = "spr_manaBlack";
                     break;
                 case "R":
-                    sprite_name = "spr_manaRed";
+                    _spriteName = "spr_manaRed";
                     break;
                 case "G":
-                    sprite_name = "spr_manaGreen";
+                    _spriteName = "spr_manaGreen";
                     break;
 				case "T": 
-					sprite_name = "spr_tap"
+					_spriteName = "spr_tap"
 					break;
                 default:
-                    if (string_digits(next_char)) {
-                        var num = real(next_char);
-                        sprite_name = "spr_manaColorless" + string(num);
+                    if (string_digits(_nextChar)) {
+                        var num = real(_nextChar);
+                        _spriteName = "spr_manaColorless" + string(num);
                     }
                     break;
             }
 
-            if (sprite_name != "") {
-                output += "[c_white][" + sprite_name + "][c_black]";
-                i += 3;
+            if (_spriteName != "") {
+                _output += "[c_white][" + _spriteName + "][c_black]";
+                _i += 3;
             } else {
-                output += current_char;
-                i += 1;
+                _output += _currentChar;
+                _i += 1;
             }
         } else {
-            output += current_char;
-            i += 1;
+            _output += _currentChar;
+            _i += 1;
         }
     }
 
-    return output;
+    return _output;
 }
 
 /// @function export_to_cockatrice(cards, file_name)
 /// @param cards An array of card structs
 /// @param file_name The name of the XML file to save
-function export_to_cockatrice(cards, file_name) {
-    var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    xml += "<cockatrice_carddatabase version=\"4\">\n";
-    xml += "  <sets>\n";
-    xml += "    <set>\n";
-    xml += "      <name>MyCustomSet</name>\n";
-    xml += "      <abbreviation>CS</abbreviation>\n";
-    xml += "    </set>\n";
-    xml += "  </sets>\n";
-    xml += "  <cards>\n";
+function export_to_cockatrice(cards, fileName) {
+    var _xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    _xml += "<cockatrice_carddatabase version=\"4\">\n";
+    _xml += "  <sets>\n";
+    _xml += "    <set>\n";
+    _xml += "      <name>MyCustomSet</name>\n";
+    _xml += "      <abbreviation>CS</abbreviation>\n";
+    _xml += "    </set>\n";
+    _xml += "  </sets>\n";
+    _xml += "  <cards>\n";
 
-    for (var i = 0; i < array_length(cards); ++i) {
-        var card = cards[i];
+    for (var _i = 0; _i < array_length(cards); ++_i) {
+        var _card = cards[_i];
 
         // Infer cmc, colors, and colorIdentity from manaCost
-        var cmc = 0;
-        var colors = "";
-        var colorIdentity = "";
+        var _cmc = 0;
+        var _colors = "";
+        var _colorIdentity = "";
 
-        var manaCost = card.manaCost;
-        var start = string_pos("{", manaCost);
+        var _manaCost = _card.manaCost;
+        var _start = string_pos("{", _manaCost);
 
-        while (start != 0) {
-            manaCost = string_delete(manaCost, start, 1);
-            var symbol = string_copy(manaCost, start, 1);
-            var _end = string_pos("}", manaCost);
-            manaCost = string_delete(manaCost, _end, 1);
+        while (_start != 0) {
+            _manaCost = string_delete(_manaCost, _start, 1);
+            var _symbol = string_copy(_manaCost, _start, 1);
+            var _end = string_pos("}", _manaCost);
+            _manaCost = string_delete(_manaCost, _end, 1);
 
-            if (string_length(symbol) == 1 && string_pos(symbol, "WUBRG") != 0) {
-                colors += symbol;
-                colorIdentity += symbol;
-                cmc += 1;
-            } else if (string_length(symbol) > 0 && string_pos(symbol, "0123456789") != 0) {
-                cmc += real(symbol);
+            if (string_length(_symbol) == 1 && string_pos(_symbol, "WUBRG") != 0) {
+                _colors += _symbol;
+                _colorIdentity += _symbol;
+                _cmc += 1;
+            } else if (string_length(_symbol) > 0 && string_pos(_symbol, "0123456789") != 0) {
+                _cmc += real(_symbol);
             }
 
-            start = string_pos("{", manaCost);
+            _start = string_pos("{", _manaCost);
         }
 
-        xml += "    <card>\n";
-        xml += "      <name>" + card.name + "</name>\n";
-        xml += "      <text>";
-        for (var j = 0; j < array_length(card.abilities); ++j) {
-            if (j > 0) {
-                xml += "\n";
+        _xml += "    <card>\n";
+        _xml += "      <name>" + _card.name + "</name>\n";
+        _xml += "      <text>";
+        for (var _j = 0; _j < array_length(_card.abilities); ++_j) {
+            if (_j > 0) {
+                _xml += "\n";
             }
-            xml += card.abilities[j];
+            _xml += _card.abilities[_j];
         }
-        xml += "</text>\n";
-        xml += "      <prop>\n";
-        xml += "        <type>" + card.type;
-        if (card.subtype != "") {
-            xml += " - " + card.subtype;
+        _xml += "</text>\n";
+        _xml += "      <prop>\n";
+        _xml += "        <type>" + _card.type;
+        if (_card.subtype != "") {
+            _xml += " - " + _card.subtype;
         }
-        xml += "</type>\n";
-        xml += "        <maintype>" + card.type + "</maintype>\n";
-        xml += "        <manacost>" + card.manaCost + "</manacost>\n";
-        xml += "        <cmc>" + string(cmc) + "</cmc>\n";
-        xml += "        <colors>" + colors + "</colors>\n";
-        xml += "        <coloridentity>" + colorIdentity + "</coloridentity>\n";
-        xml += "        <pt>" + string(card.power) + "/" + string(card.toughness) + "</pt>\n";
-        xml += "      </prop>\n";
-        xml += "      <set rarity=\"" + card.rarity + "\">CS</set>\n";
-		xml += "      <flavor>" + card.flavorText + "</flavor>\n";
-        xml += "    </card>\n";
-    }
+        _xml += "</type>\n";
+        _xml += "        <maintype>" + _card.type + "</maintype>\n";
+        _xml += "        <manacost>" + _card.manaCost + "</manacost>\n";
+        _xml += "        <cmc>" + string(_cmc) + "</cmc>\n";
+        _xml += "        <colors>" + _colors + "</colors>\n";
+        _xml += "        <coloridentity>" + _colorIdentity + "</coloridentity>\n";
+        _xml += "        <pt>" + string(_card.power) + "/" + string(_card.toughness) + "</pt>\n";
+	    _xml += "      </prop>\n";
+	    _xml += "      <set rarity=\"" + _card.rarity + "\">CS</set>\n";
+	    _xml += "      <flavor>" + _card.flavorText + "</flavor>\n";
+	    _xml += "    </card>\n";
+	}
 
-    xml += "  </cards>\n";
-    xml += "</cockatrice_carddatabase>";
+	_xml += "  </cards>\n";
+	_xml += "</cockatrice_carddatabase>";
 
-    // Save the XML to a file
-    var file = file_text_open_write(file_name);
-    file_text_write_string(file, xml);
-    file_text_close(file);
+	// Save the XML to a file
+	var _file = file_text_open_write(fileName);
+	file_text_write_string(_file, _xml);
+	file_text_close(_file);
 }
 
-// Define a function to generate a version 4 UUID
-function generate_UUID(){
-    // Generate a random 16-byte array
-    var bytes = array_create(16);
-    for (var i = 0; i < 16; i++) {
-        bytes[i] = irandom(255);
-    }
-
-    // Set the version bits (bits 12-15) to 0100 (version 4)
-    bytes[6] = (bytes[6] & 0x0F) | 0x40;
-
-    // Set the variant bits (bits 10-11) to 10 (RFC 4122 variant)
-    bytes[8] = (bytes[8] & 0x3F) | 0x80;
-
-    // Convert the byte array to a string in the format "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-    var hexChars = "0123456789abcdef";
-    var uuid = "";
-    for (var i = 0; i < 16; i++) {
-        var hexByte = bytes[i];
-        var hex1 = string_char_at(hexChars, (hexByte >> 4) & 0x0F + 1);
-        var hex2 = string_char_at(hexChars, (hexByte & 0x0F) + 1);
-        uuid += hex1 + hex2;
-        if (i == 3 || i == 5 || i == 7 || i == 9) {
-            uuid += "-";
-        }
-    }
-
-    return uuid;
-}
 
 
 

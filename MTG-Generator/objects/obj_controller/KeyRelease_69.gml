@@ -1,1 +1,1 @@
-export_to_cockatrice(cardSetArray, theme + ".xml");
+export_to_cockatrice(cardSetArray, theme + "._xml");

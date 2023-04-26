@@ -23,7 +23,12 @@ if (_request_id == chatgptRequestId) {
 		//show_message(_cardDataStruct.imageDescription);
 		//dalleRequestId = send_dalle_request(_cardDataStruct.imageDescription);
 		sprite_delete(currentCardImage);
-		stableDiffusionRequestId = send_stableDiffusion_request(_cardDataStruct.imageDescription);
+		
+		if (!USE_DALLE){
+			stableDiffusionRequestId = send_stableDiffusion_request(_cardDataStruct.imageDescription);
+		}else{
+			dalleRequestId = send_dalle_request(_cardDataStruct.imageDescription);		
+		}
 		textPrompt += " A card with the name '" + currentCardStruct.name + "' already exists so do not create a card named that but the card may reference it.";
    }catch(_error){
 		show_debug_message("Failed to generate text");
@@ -31,7 +36,7 @@ if (_request_id == chatgptRequestId) {
    }
 }
 
-//For card image from Dalle-2
+//For card images from Dalle-2
 if (_request_id == dalleRequestId) {
     try{
 		var _response = async_load[? "result"];
@@ -44,7 +49,7 @@ if (_request_id == dalleRequestId) {
 	}
 }
 
-//For card image from stable diffusion
+//For card images from stable diffusion
 if (_request_id == stableDiffusionRequestId) {
     try{
 		var _response = async_load[? "result"];
