@@ -18,7 +18,7 @@ This Project is provided "as is" and "as available" without warranties of any ki
 ### API Keys
 In the `scr_functions` script there are two macros `OPENAI_API_KEY` and `STABILTIY_API_KEY`, you will need to provide at least an OpenAi API key or both, they can be found here:
 - [Stabiltiy Ai](https://dreamstudio.ai/account)
-- [openAi](https://platform.openai.com/account/api-keys)
+- [OpenAi](https://platform.openai.com/account/api-keys)
 
 ### Generating Cards
 - In `obj_controller` under its create event, there is a variable called `theme`; set this variable to whatever you want. 
