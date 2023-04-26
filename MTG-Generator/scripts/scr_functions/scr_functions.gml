@@ -1,8 +1,8 @@
+#macro OPENAI_API_KEY ""
+#macro STABILITY_API_KEY ""
+
 randomize();
 global.emptyStruct = {};
-
-#macro OPENAI_API_KEY "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"
-#macro STABILITY_API_KEY "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"
 
 /**
  * Sends a request to the ChatGPT API with the given prompt.
@@ -53,7 +53,7 @@ function send_dalle_request(_prompt) {
 	var _dataJson = json_stringify(_data);
 	show_debug_message("Image data: " + _dataJson);
 
-    // Replace "your_OPENAI_API_KEY" with your actual API key
+    // Headers
     ds_map_add(_headers, "Authorization", "Bearer " + OPENAI_API_KEY);
     ds_map_add(_headers, "Content-Type", "application/json");
 
@@ -114,7 +114,7 @@ function get_stableDiffusion_models() {
 	show_debug_message("Image data: " + _dataJson);
 
     // Replace "your_OPENAI_API_KEY" with your actual API key
-    ds_map_add(_headers, "Authorization", "Bearer sk-vz8tAbSXj8ROd3GkUxiUK9U9fHAcgVcJY4nwpw7uHu5bSSb1");
+    ds_map_add(_headers, "Authorization", "Bearer " + string(STABILITY_API_KEY));
 
 
     // Send the POST request
