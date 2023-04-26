@@ -7,7 +7,7 @@ if (_request_id == chatgptRequestId) {
 	var _response = async_load[? "result"];
 	
 	try {
-	var _json = SnapFromJSON(_response);
+	var _json = json_parse(_response);
 
 	// Process the response data here
 	var _generatedText = _json[$ "choices"][0][$ "text"];
@@ -18,7 +18,7 @@ if (_request_id == chatgptRequestId) {
 	}
     
 	try {
-		var _cardDataStruct = SnapFromJSON(_generatedText);
+		var _cardDataStruct = json_parse(_generatedText);
 		currentCardStruct = _cardDataStruct;
 		//show_message(_cardDataStruct.imageDescription);
 		//dalleRequestId = send_dalle_request(_cardDataStruct.imageDescription);
@@ -40,7 +40,7 @@ if (_request_id == chatgptRequestId) {
 if (_request_id == dalleRequestId) {
     try{
 		var _response = async_load[? "result"];
-		var _responseStruct = SnapFromJSON(_response);
+		var _responseStruct = json_parse(_response);
 		var _imageUrl = _responseStruct[$ "data"][0][$ "url"];
 		show_debug_message(_imageUrl);
 	    currentCardImage = sprite_add(_imageUrl, 1, false, false, 0, 0);

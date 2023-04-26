@@ -1,5 +1,5 @@
-#macro OPENAI_API_KEY ""
-#macro STABILITY_API_KEY ""
+#macro OPENAI_API_KEY "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"
+#macro STABILITY_API_KEY "sk-C5QldRF1OkJ9QOFvWJ7u70UcXnINdPOXEwGB2YmNMVzbKqeA"
 #macro USE_DALLE false
 
 randomize();
