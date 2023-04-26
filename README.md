@@ -1,5 +1,7 @@
 # MTG-AI
-Generate brand new magic cards with ChatGPT and Stable Diffusion
+Generate brand new magic cards with ChatGPT and Stable Diffusion.
+- Will generate cards based on almost any theme.
+- Cards can be exported to Cockatrice so they can be played with.
 
 # Disclaimer
 This AI Magic the Gathering Card Generator is an unofficial, fan-made project created for entertainment purposes only. It is not affiliated with, endorsed, sponsored, or approved by Wizards of the Coast LLC, the creator and publisher of the Magic: The Gathering trading card game.
