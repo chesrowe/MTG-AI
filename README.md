@@ -22,6 +22,7 @@ In the `scr_functions` script there are two macros `OPENAI_API_KEY` and `STABILT
 
 ### Generating Cards
 - In `obj_controller` under its create event, there is a variable called `theme`; set this variable to what ever you want. 
+- If you are only using OpenAi and not Stable Diffusion, change the value of the `USE_DALLE` macro found in `scr_functions` to `true.  
 - When running the project, click the generate card button and it will begin generating a new card.
 - Once any number of cards have been generated, you can click the export button to save an XML file compatible with Cockatrice
 - All cards and XML files are outputed to `appdata/local/MTG-Generator`
