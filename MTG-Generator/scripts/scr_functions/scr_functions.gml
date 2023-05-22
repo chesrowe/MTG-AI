@@ -1,8 +1,9 @@
-#macro OPENAI_API_KEY "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"
-#macro STABILITY_API_KEY "sk-C5QldRF1OkJ9QOFvWJ7u70UcXnINdPOXEwGB2YmNMVzbKqeA"
 #macro USE_DALLE false
 
 randomize();
+
+var _configPath = "C:/Users/madma/OneDrive/Desktop/MTG-AI/config.json"
+global.config = json_load(_configPath);
 global.emptyStruct = {};
 
 /**
@@ -26,7 +27,7 @@ function send_chatgpt_request(_prompt) {
 	show_debug_message("Text data: " +_dataJson);
 
     // Replace "your_OPENAI_API_KEY" with your actual API key
-    ds_map_add(_headers, "Authorization", "Bearer " + OPENAI_API_KEY);
+    ds_map_add(_headers, "Authorization", "Bearer " + global.config.openAiKey);
     ds_map_add(_headers, "Content-Type", "application/json");
 
     // Send the POST request
@@ -55,7 +56,7 @@ function send_dalle_request(_prompt) {
 	show_debug_message("Image data: " + _dataJson);
 
     // Headers
-    ds_map_add(_headers, "Authorization", "Bearer " + OPENAI_API_KEY);
+    ds_map_add(_headers, "Authorization", "Bearer " + global.config.openAiKey);
     ds_map_add(_headers, "Content-Type", "application/json");
 
     // Send the POST request
@@ -94,7 +95,7 @@ function send_stableDiffusion_request(_prompt) {
     // Headers
     ds_map_add(_headers, "Accept", "application/json");
     ds_map_add(_headers, "Content-Type", "application/json");
-    ds_map_add(_headers, "Authorization", "Bearer " + string(STABILITY_API_KEY));
+    ds_map_add(_headers, "Authorization", "Bearer " + string(global.config.stabilityAiKey));
 
 
     // Send the POST request
@@ -114,7 +115,7 @@ function get_stableDiffusion_models() {
 	var _dataJson = json_stringify(_data);
 	show_debug_message("Image data: " + _dataJson);
 
-    ds_map_add(_headers, "Authorization", "Bearer " + string(STABILITY_API_KEY));
+    ds_map_add(_headers, "Authorization", "Bearer " + string(global.config.stabilityAiKey));
 
     // Send the POST request
     var _request_id = http_request(_url, "GET", _headers, _dataJson);
@@ -262,8 +263,66 @@ function export_to_cockatrice(cards, fileName) {
 	file_text_close(_file);
 }
 
+global.lastMessageId = "";
+global.lastUserMessageId = ""; 
+global.lastBotMessageId = "";
 
+/// @func json_load(filePath)
+/// @desc Loads a json file and parses in as a struct then returns that struct or -1 if failed
+/// @param {string} filePath The path to the json file
+function json_load(_filePath){
+	var _buff = buffer_load(_filePath);
+	
+	if (_buff != -1){
+		var _str = buffer_read(_buff, buffer_text);
+		buffer_delete(_buff);
+		//var _parsedJson =  json_parse(_str);
+		var _parsedJson = json_parse(_str);
+		return is_struct(_parsedJson) ? _parsedJson : -1;
+	}else{
+		return -1;
+	}
+}
 
+exception_unhandled_handler(function(_error){
+	var _errorMessage = "";
+	_errorMessage += "**MTG-Generator**\r\n"
+	_errorMessage += "Where\r\n"
+	_errorMessage += "```\r\n" + _error.script + "\r\n```\r\n";
+	_errorMessage += "Error\r\n"
+	_errorMessage += "```\r\n" + _error.longMessage + "\r\n```\r\n";
+	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);
+	show_message(_errorMessage);
+});
+
+function card_prompt(_theme, _previousCards = []){
+	var _prompt = "Create an idea for a new Magic the Gathering card with the theme of " + theme + 
+				  @". Explore all aspects and characters of the theme, not just the main ones. 
+				  Be creative with card abilites, come up with new ones. Generate cards of any type. 
+				  Give me the card data as valid JSON and ONLY include the valid JSON and nothing else.
+				  \nOnly give me the following properties: 
+				  \nname, 
+				  type, 
+				  subtype, 
+				  power(if the card is not a creature set this to -1), 
+				  toughness(if the card is not a creature set this to -1), 
+				  manaCost(with each mana type with curly braces such as {3}{W}{R}), 
+				  abilities(as an array), rulings(as an array), flavorText, 
+				  imageDescription(A highly detailed description of the image that is on the card. It will be used to generate an image with DALLE-2. DO NOT mention the word 'card' in the imageDescription), 
+				  rarity, and 
+				  cardFrameSprite(This will be the sprite that is drawn for the card frame to make it match the mana color of the card, this can ONLY be one of the following: spr_cardFrameBlue, spr_cardFrameWhite, spr_cardFrameBlack, spr_cardFrameRed, or spr_cardFrameGreen).";	
+	
+	var _i = 0;
+	
+	repeat(array_length(_previousCards)){
+		var _currentCard = _previousCards[_i];
+		
+		_prompt += " A card with the name '" + _currentCard.name + "' already exists so do not create a card named that but the card may reference it.";	
+		_i++;
+	}
+	
+	return _prompt;
+}
 
 
 
