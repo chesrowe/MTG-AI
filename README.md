@@ -19,7 +19,7 @@ This Project is provided "as is" and "as available" without warranties of any ki
 ### Create Discord Application
 You will need to setup two Discord applications [here](https://discord.com/developers/applications/) and add them to your server.
 One will be for handling the card generation commands and the other will be for error logging. For example "MTG Bot" and "Error Bot".
-They will need permissions to and and edit messages.
+They will need permissions to send messages, edit messages, and create server commands.
 
 ### API Keys
 MTG-AI uses the [ChatGPT API]() and the [Stability Ai API]() to generate the cards, so an API key for each must be provided.
@@ -33,22 +33,19 @@ You will need to make a folder called `MTG-AI` on your desktop and create a new 
 An example `config.json` would be:
 ```json
 {
-    "MTGBotToken" : "<Discord bot token of the bot handling the card generation>",
-    "MTGApplicationId" : "<Application ID of the bot handling the card generation>",
+    "MTGBotToken" : "DFDSDFJ34DFD64DGFSDGFDSGSGD45OIREOTIU", // Discord bot token of the bot handling the card generation
+    "MTGApplicationId" : "112246984056985", // Application ID of the bot handling the card generation
     "openAiKey" : "sk-sdfgsdfgsdfgsdfg", 
     "stabilityAiKey" : "sk-asdfasdfasdfasdf",
     "MTGChannelId" : "123412341234", // Channel where the card generation will happen
-    "errorBotToken" : "<A bot whose job is to log erros>",
+    "errorBotToken" : "ZGDFGDSDFJ34DFD64DIOUYPISGSGD45OIREOTIU", // A bot whose job is to log errors
     "errorApplicationId" : "124576371906",
     "errorChannelId" : "116772358755783694" // Channel where errors will be logged
+    "serverId" : "1010438968482866738" // The server where the bots live
 }
 ```
 
 ### Generating Cards
-- In `obj_controller` under its create event, there is a variable called `theme`; set this variable to whatever you want. 
-- If you are only using OpenAi and not Stable Diffusion, change the value of the `USE_DALLE` macro found in `scr_functions` to `true`.  
-- When running the project, click the generate card button and it will begin generating a new card.
-- Once any number of cards have been generated, you can click the export button to save an XML file compatible with Cockatrice
-- All cards and XML files are outputed to `appdata/local/MTG-Generator`
+Once your GameMaker "server" is connected to the Discord Gateway, it should 
 
 
