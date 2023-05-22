@@ -16,13 +16,13 @@ By using this Project, users agree to acknowledge that the Project is not endors
 This Project is provided "as is" and "as available" without warranties of any kind, either express or implied, including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the creator of this Project be liable for any direct, indirect, incidental, special, consequential, or punitive damages whatsoever arising out of the use of, or inability to use, the Project or its generated content.
 
 ## Setup
-### Create Discord Application
+### Create Discord Applications
 You will need to setup two Discord applications [here](https://discord.com/developers/applications/) and add them to your server.
 One will be for handling the card generation commands and the other will be for error logging. For example "MTG Bot" and "Error Bot".
 They will need permissions to send messages, edit messages, and create server commands.
 
 ### API Keys
-MTG-AI uses the [ChatGPT API]() and the [Stability Ai API]() to generate the cards, so an API key for each must be provided.
+MTG-AI uses the [ChatGPT API](https://platform.openai.com/docs/api-reference/) and the [Stability Ai API](https://api.stability.ai/docs) to generate the cards, so an API key for each must be provided.
 
 Find your API keys for each here:
 - [Stability Ai keys](https://dreamstudio.ai/account)
