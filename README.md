@@ -1,5 +1,5 @@
 # MTG-AI
-Generate brand new magic cards with ChatGPT and Stable Diffusion via Discord.
+Generate brand new magic cards with ChatGPT and Stable Diffusion via a Discord bot.
 - Will generate cards based on almost any theme in batches of 1 - 10 cards.
 - Uses a Discord interface similar to Midjourney
 - Cards can be exported to Cockatrice so they can be played with.
@@ -46,6 +46,6 @@ An example `config.json` would be:
 ```
 
 ### Generating Cards
-Once your GameMaker "server" is connected to the Discord Gateway, it should 
+Once your GameMaker program is connected to the Discord Gateway, it should automatically register the `/generate` command to your Discord server. You can then use `/generate` to start generating cards. 
 
 
