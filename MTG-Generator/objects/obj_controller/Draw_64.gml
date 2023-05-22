@@ -1,97 +1,117 @@
-if (currentCardImage != -1){
-	if (sprite_exists(currentCardImage)){
-		draw_sprite_stretched(currentCardImage, 0, 92, 95, 580, 500);	
-	}
-}
+var _i = 0;
 
-if (currentCardStruct != global.emptyStruct){
-	try{
-		draw_sprite(asset_get_index(currentCardStruct.cardFrameSprite), 0, 10, 10);
-		
-		var _namefontColor = "[c_black]";
-		var _typeFontColor = "[c_black]";
-		var _powerFontColor = "[c_black]";
-		
-		switch (currentCardStruct.cardFrameSprite){
-			case "spr_cardFrameBlack":
-			case "spr_cardFrameBlue":
-			case "spr_cardFrameGreen":
-			case "spr_cardFrameRed":
-				_namefontColor = "[c_white]";
-				_typeFontColor = "[c_white]";
-				_powerFontColor = "[c_white]";
-			break;
-			
-			case "spr_cardFrameWhite":
-				_namefontColor = "[c_black]";
-				_typeFontColor = "[c_black]";
-				_powerFontColor = "[c_black]";
-			break;
-		}
-		
-		
-		var _titleText = scribble("[fnt_cardName]" + _namefontColor + "[fa_left]" + currentCardStruct.name);
-		_titleText.draw(85, 60);
-		var _cardType = scribble("[fnt_cardName]" + _typeFontColor + "[fa_left]" + string(currentCardStruct.type) + " - " + string(currentCardStruct.subtype));
-		_cardType.draw(85, 590);
-		scribble("[fa_right]" + string(parse_magic_symbols(currentCardStruct.manaCost))).draw(678, 60);
+repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
+	var _currentJob = jobsWaitingToBeDrawnAndSentArray[_i];
+	var _completedCardImages = [];
 	
-		var _concatedAbilityText = "";
-		
-		var _i = 0;
-		
-		repeat(array_length(currentCardStruct.abilities)){
-			_concatedAbilityText += currentCardStruct.abilities[_i] + "\n\n";
-			
-			_i++;	
-		}
-		
-		var _abilityScribble = scribble("[fnt_cardText][c_black]" + parse_magic_symbols(_concatedAbilityText));
-		_abilityScribble.fit_to_box(570, 200);
-		//_abilityScribble.line_spacing("100%");
-		
-		_abilityScribble.draw(100, 645);
-		
-		var _flavorScribble = scribble("[fnt_cardFlavorText][c_black]" + currentCardStruct.flavorText);
-		_flavorScribble.fit_to_box(570, 190);
-		//_flavorScribble.origin(0, 0);
-		//_flavorScribble.skew(0.5, 0);
-		//_flavorScribble.line_spacing("100%");
-		
-		_flavorScribble.draw(100, 860);
-		
-		if (currentCardStruct.toughness != -1){
-			var _powerToughness = scribble("[fnt_cardName]" + _powerFontColor + "[fa_right]" + string(currentCardStruct.power) + "/" + string(currentCardStruct.toughness));
-			_powerToughness.scale(1.2);	
-			_powerToughness.draw(680, 950);
-		}
+	var _j = 0;
 	
-		draw_text_ext(1050, 100, string(currentCardStruct.imageDescription), 20, 600);
-		draw_text_ext(1050, 200, string(currentCardStruct.rulings), 20, 600);
-	}catch(_error){
+	repeat(array_length(_currentJob.cardsWaitingToBeDrawn)){
+		var _currentCardToBeDrawn = _currentJob.cardsWaitingToBeDrawn[_j];
+		var _currentCardStruct = _currentCardToBeDrawn.cardStruct;
+		var _cardSurface = surface_create(744, 1045);
+		var _currentCardImageSprite = sprite_add("Card Images/" + _currentCardStruct.name + ".png", 1, false, false, 0, 0);
+		surface_set_target(_cardSurface);
+		var _xOrg = -10;
+		var _yOrg = -10;
+		//Draw card image 
+		if (sprite_exists(_currentCardImageSprite)){
+			draw_sprite_stretched(_currentCardImageSprite, 0, 92 + _xOrg, 95 + _yOrg, 580, 500);	
+		}			
+		
+		//Draw card text
+		try {
+			draw_sprite(asset_get_index(_currentCardStruct.cardFrameSprite), 0, 10 + _xOrg, 10 + _yOrg);
+		
+			var _namefontColor = "[c_black]";
+			var _typeFontColor = "[c_black]";
+			var _powerFontColor = "[c_black]";
+		
+			switch (_currentCardStruct.cardFrameSprite){
+				case "spr_cardFrameBlack":
+				case "spr_cardFrameBlue":
+				case "spr_cardFrameGreen":
+				case "spr_cardFrameRed":
+					_namefontColor = "[c_white]";
+					_typeFontColor = "[c_white]";
+					_powerFontColor = "[c_white]";
+				break;
 			
-	}
-}
-
-if (currentCardImage != -1){
-	if (sprite_exists(currentCardImage)){	
-		if (!screenSaved){
-			screen_save_part(currentCardStruct.name + ".png", 30, 30, 700, 1000);
-			screenSaved = true;
+				case "spr_cardFrameWhite":
+					_namefontColor = "[c_black]";
+					_typeFontColor = "[c_black]";
+					_powerFontColor = "[c_black]";
+				break;
+			}
+		
+		
+			var _titleText = scribble("[fnt_cardName]" + _namefontColor + "[fa_left]" + _currentCardStruct.name);
+			_titleText.draw(85 + _xOrg, 60 + _yOrg);
+			var _cardType = scribble("[fnt_cardName]" + _typeFontColor + "[fa_left]" + string(_currentCardStruct.type) + " - " + string(_currentCardStruct.subtype));
+			_cardType.draw(85 + _xOrg, 590 + _yOrg);
+			scribble("[fa_right]" + string(parse_magic_symbols(_currentCardStruct.manaCost))).draw(678 + _xOrg, 60 + _yOrg);
+	
+			var _concatedAbilityText = "";
+		
+			var _i = 0;
+		
+			repeat(array_length(_currentCardStruct.abilities)){
+				_concatedAbilityText += _currentCardStruct.abilities[_i] + "\n\n";
+			
+				_i++;	
+			}
+		
+			var _abilityScribble = scribble("[fnt_cardText][c_black]" + parse_magic_symbols(_concatedAbilityText));
+			_abilityScribble.fit_to_box(570, 200);
+			//_abilityScribble.line_spacing("100%");
+		
+			_abilityScribble.draw(100 + _xOrg, 645 + _yOrg);
+		
+			var _flavorScribble = scribble("[fnt_cardFlavorText][c_black]" + _currentCardStruct.flavorText);
+			_flavorScribble.fit_to_box(570, 190);
+			//_flavorScribble.origin(0, 0);
+			//_flavorScribble.skew(0.5, 0);
+			//_flavorScribble.line_spacing("100%");
+		
+			_flavorScribble.draw(100 + _xOrg, 860 + _yOrg);
+		
+			if (_currentCardStruct.toughness != -1){
+				var _powerToughness = scribble("[fnt_cardName]" + _powerFontColor + "[fa_right]" + string(_currentCardStruct.power) + "/" + string(_currentCardStruct.toughness));
+				_powerToughness.scale(1.2);	
+				_powerToughness.draw(680 + _xOrg, 950 + _yOrg);
+			}
+	
+			//draw_text_ext(1050, 100, string(_currentCardStruct.imageDescription), 20, 600);
+			//draw_text_ext(1050, 200, string(_currentCardStruct.rulings), 20, 600);
+		}catch(_error){
+			discord_error(_error);	
 		}
+		
+		surface_reset_target();	
+		
+		var _completedCardFilePath = "Completed Cards/" + string(_currentCardStruct.name) + ".png";
+		surface_save(_cardSurface, _completedCardFilePath);
+		surface_free(_cardSurface);
+		sprite_delete(_currentCardImageSprite);
+		var _completedCardAttachment = new discordFileAttachment(_completedCardFilePath, string(_currentCardStruct.name) + ".png");
+		array_push(_completedCardImages, _completedCardAttachment);
+		_j++;
 	}
+	
+	//Send the completed card images for this job to Discord
+	var _completedCardsEditCallback = function(){
+		show_debug_message(async_load[? "result"]);	
+	}
+	
+	magicBot.interactionResponseEdit(_currentJob.interactionToken, "Cards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, -1, -1, -1, _completedCardImages);
+	_i++;
 }
 
-// Draw "Generate Next Card" button
-draw_set_color(c_blue);
-draw_rectangle(nextCardButtonX1, nextCardButtonY1, nextCardButtonX2, nextCardButtonY2, false);
-draw_set_color(c_white);
-draw_set_halign(fa_center);
-draw_set_valign(fa_middle);
-draw_text((nextCardButtonX1 + nextCardButtonX2) / 2, (nextCardButtonY1 + nextCardButtonY2) / 2, "Generate Next Card");
+jobsWaitingToBeDrawnAndSentArray = [];
 
-// Draw "Export Cards" button
-draw_set_color(c_blue);
-draw_rectangle(exportButtonX1, exportButtonY1, exportButtonX2, exportButtonY2, false);
-draw_set_color(c_white);
-draw_text((exportButtonX1 + exportButtonX2) / 2, (exportButtonY1 + exportButtonY2) / 2, "Export Cards");
+var _debugText = "";
+_debugText += "heartbeat counter: " + string(magicBot.__gatewayHeartbeatCounter) + "\n";
+_debugText += "Number of disconnects: " + string(magicBot.__gatewayNumberOfDisconnects) + "\n";
+
+scribble(_debugText).draw(10, 10);
+

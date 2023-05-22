@@ -80,7 +80,7 @@ function send_stableDiffusion_request(_prompt) {
     var _data = {
 				text_prompts: [
 					{
-						text : string(currentCardStruct.name + ". " + theme + ". " +  _prompt + ". Magic the Gathering, Highly detailed, gothic, dark fantasy, realistic digital painting, masterpiece, 4K. By Christopher Rush"),
+						text : string(_prompt + ". Magic the Gathering, Highly detailed, gothic, dark fantasy, realistic digital painting, masterpiece, 4K. By Christopher Rush"),
 					}
 				],
 				samples : int64(1),
@@ -284,34 +284,20 @@ function json_load(_filePath){
 	}
 }
 
-exception_unhandled_handler(function(_error){
+function discord_error(_error){
 	var _errorMessage = "";
 	_errorMessage += "**MTG-Generator**\r\n"
 	_errorMessage += "Where\r\n"
 	_errorMessage += "```\r\n" + _error.script + "\r\n```\r\n";
 	_errorMessage += "Error\r\n"
 	_errorMessage += "```\r\n" + _error.longMessage + "\r\n```\r\n";
-	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);
-	show_message(_errorMessage);
-});
+	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);		
+}
+
+exception_unhandled_handler(discord_error);
 
 function card_prompt(_theme, _previousCards = []){
-	var _prompt = "Create an idea for a new Magic the Gathering card with the theme of " + theme + 
-				  @". Explore all aspects and characters of the theme, not just the main ones. 
-				  Be creative with card abilites, come up with new ones. Generate cards of any type. 
-				  Give me the card data as valid JSON and ONLY include the valid JSON and nothing else.
-				  \nOnly give me the following properties: 
-				  \nname, 
-				  type, 
-				  subtype, 
-				  power(if the card is not a creature set this to -1), 
-				  toughness(if the card is not a creature set this to -1), 
-				  manaCost(with each mana type with curly braces such as {3}{W}{R}), 
-				  abilities(as an array), rulings(as an array), flavorText, 
-				  imageDescription(A highly detailed description of the image that is on the card. It will be used to generate an image with DALLE-2. DO NOT mention the word 'card' in the imageDescription), 
-				  rarity, and 
-				  cardFrameSprite(This will be the sprite that is drawn for the card frame to make it match the mana color of the card, this can ONLY be one of the following: spr_cardFrameBlue, spr_cardFrameWhite, spr_cardFrameBlack, spr_cardFrameRed, or spr_cardFrameGreen).";	
-	
+	var _prompt = "Create an idea for a new Magic the Gathering card with the theme of " + _theme + ". Explore all aspects and characters of the theme, not just the main ones. Be creative with card abilites, come up with new ones. Generate cards of any type. Give me the card data as valid JSON and ONLY include the valid JSON and nothing else.\nOnly give me the following properties: \nname, type, subtype, power(if the card is not a creature set this to -1), toughness(if the card is not a creature set this to -1), manaCost(with each mana type with curly braces such as {3}{W}{R}), abilities(as an array), rulings(as an array), flavorText, imageDescription(A highly detailed description of the image that is on the card. It will be used to generate an image with DALLE-2. DO NOT mention the word 'card' in the imageDescription), rarity, and cardFrameSprite(This will be the sprite that is drawn for the card frame to make it match the mana color of the card, this can ONLY be one of the following: spr_cardFrameBlue, spr_cardFrameWhite, spr_cardFrameBlack, spr_cardFrameRed, or spr_cardFrameGreen).";	
 	var _i = 0;
 	
 	repeat(array_length(_previousCards)){

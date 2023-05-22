@@ -2,59 +2,106 @@
 var _requestId = async_load[? "id"];
 var _status = async_load[? "status"];
 
-// For card text
-if (_requestId == chatgptRequestId) {   
-	var _response = async_load[? "result"];
-	
-	try {
-		var _json = json_parse(_response);
+var _i = 0;
+var _markedForDeletion = [];
 
-		// Process the response data here
-		var _generatedText = _json[$ "choices"][0][$ "text"];
-		//show_message(_generatedText);
-	}catch(_error){
-		show_debug_message("Failed to generate text");
-		chatgptRequestId = send_chatgpt_request(textPrompt);	
+repeat(array_length(jobsInProgressArray)){
+	var _currentJob = jobsInProgressArray[_i];
+	
+	//Card text
+	var _j = 0;
+	
+	repeat(array_length(_currentJob.cardTextRequestIdArray)){
+		var _currentTextRequestId = _currentJob.cardTextRequestIdArray[_j];
+		
+		if (_currentTextRequestId == _requestId){
+			//Add card text struct to the job and send off prompt for the card image
+			var _response = async_load[? "result"];
+	
+			try {
+				var _responseData = json_parse(_response);
+
+				// Process the response data here
+				var _generatedText = _responseData[$ "choices"][0][$ "text"];
+				var _cardDataStruct = json_parse(_generatedText);
+				array_push(_currentJob.cardTextArray, _cardDataStruct);
+	
+				var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _cardDataStruct.name + "," + _cardDataStruct.imageDescription);
+				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _cardDataStruct);
+				array_push(_currentJob.imageRequestArray, _imageRequestStruct);
+		   }catch(_error){
+				show_debug_message("Failed to generate text");
+				discord_error(_error);
+				_currentJob.cardTextRequestIdArray[_j] = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));	
+		   }
+		   
+		   break;
+		}
+		
+		_j++;
 	}
-    
-	try {
-		var _cardDataStruct = json_parse(_generatedText);
-		currentCardStruct = _cardDataStruct;
-		//show_message(_cardDataStruct.imageDescription);
-		//dalleRequestId = send_dalle_request(_cardDataStruct.imageDescription);
 	
-		stableDiffusionRequestId = send_stableDiffusion_request(_cardDataStruct.imageDescription);
+	//Card images
+	var _j = 0;
+	
+	repeat(array_length(_currentJob.imageRequestArray)){
+		var _currentTextRequest = _currentJob.imageRequestArray[_j];
+		var _currentImageRequestId = _currentTextRequest.requestId;
 		
-		textPrompt += " A card with the name '" + currentCardStruct.name + "' already exists so do not create a card named that but the card may reference it.";
-   }catch(_error){
-		show_debug_message("Failed to generate text");
-		chatgptRequestId = send_chatgpt_request(textPrompt);
-   }
-}
-
-//For card images from stable diffusion
-if (_requestId == stableDiffusionRequestId) {
-    try{
-		var _response = async_load[? "result"];
-		var _status = async_load[? "status"];
-		//show_message(_status);
-		//show_debug_message(_response);
+		if (_currentImageRequestId == _requestId){
+			 try{
+				var _response = async_load[? "result"];
+				var _status = async_load[? "status"];
 		
-		if (_response != undefined){
-			var _imageJson = json_parse(_response);
-			var _decodedImage = buffer_base64_decode(_imageJson.artifacts[0].base64);
+				if (_response != undefined){
+					var _imageJson = json_parse(_response);
+					var _decodedImage = buffer_base64_decode(_imageJson.artifacts[0].base64);
 			
-			buffer_save(_decodedImage, "Card Images/" + currentCardStruct.name + ".png");
-			buffer_delete(_decodedImage);
-			currentCardImage = sprite_add("Card Images/" + currentCardStruct.name + ".png", 1, false, false, 0, 0);
-			array_push(cardSetArray, currentCardStruct);
-			screenSaved = false;
-		}		
-	}catch(_error){
-		show_message("Failed to generate Image");
-		show_message(_error);
+					var _imageFilePath = "Card Images/" + _currentTextRequest.cardStruct.name + ".png";
+					buffer_save(_decodedImage, _imageFilePath);
+					buffer_delete(_decodedImage);
+					
+					var _cardImageTextPair = new cardWaitingToBeDrawn(_currentTextRequest.cardStruct, _imageFilePath);
+					array_push(_currentJob.cardsWaitingToBeDrawn, _cardImageTextPair);
+					magicBot.interactionResponseEdit(_currentJob.interactionToken, "Card(s) generating (" + string(array_length(_currentJob.cardsWaitingToBeDrawn)) + " of " + string(_currentJob.cardNumber) + ")", function(){
+						//show_message(async_load[? "result"]);	
+					});
+					
+					if (array_length(_currentJob.cardsWaitingToBeDrawn) >= _currentJob.cardNumber){
+						array_push(jobsWaitingToBeDrawnAndSentArray, _currentJob);
+						array_push(_markedForDeletion, _i);
+					}else{
+						var _nextCardTextRequest = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));
+						array_push(_currentJob.cardTextRequestIdArray, _nextCardTextRequest);
+					}
+				}		
+			}catch(_error){
+				show_debug_message("Failed to generate Image, resending request...");
+				discord_error(_error);
+				//Try and send off another
+				var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _currentTextRequest.cardStruct.name + "," + _currentTextRequest.cardStruct.imageDescription);
+				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _currentTextRequest.cardStruct);
+				_currentJob.imageRequestArray[_j] = _imageRequestStruct; 
+			}	
+			
+			break;
+		}
+		
+		_j++;
 	}
+	
+	
+	_i++;		
 }
+
+var _a = 0;
+
+repeat(array_length(_markedForDeletion)){
+	//array_delete(jobsInProgressArray, jobsInProgressArray[_a], 1);
+	_a++;
+}
+
+
 
 
 

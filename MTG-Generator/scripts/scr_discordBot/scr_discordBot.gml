@@ -707,24 +707,6 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	}
     #endregion
 
-	/// presenceSend(activity, status)
-	/// @param activity
-	/// @param status
-	static presenceSend = function(_activities, _status) {
-	    var _payload = {
-	        op: GATEWAY_OP_CODE.presenceUpdate,
-	        d: {
-	            since: int64(date_current_datetime()),
-	            activities: _activities,
-	            status: _status,
-	            afk: false
-	        }
-	    };
-
-	    __gatewayEventSend(_payload);
-	}
-
-	
 	if (_useGatewayEvents){
 		var _url = "wss://gateway.discord.gg/?v=10&encoding=json";
 		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
@@ -739,6 +721,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	__gatewaySequenceNumber = -1;
 	__gatewayResumeUrl = "";
 	__gatewaySessionId = ""
+	__gatewayNumberOfDisconnects = 0;
 	gatewayEventCallbacks = {};
 	
 	/// @func __gatewaySendHeartbeat()
@@ -749,12 +732,21 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 			d : (__gatewaySequenceNumber == -1) ? pointer_null : __gatewaySequenceNumber
 		};	
 
-		__gatewayEventSend(_payload);
-	
-		__gatewayHeartbeatCounter++;
+		var _bytesSent = __gatewayEventSend(_payload);
 		
-		if (!__gatewayIndentityHandshake && __gatewayHeartbeatCounter > 0){
-			__gatewaySendIdentity();	
+		if (_bytesSent > 0){	
+			__gatewayHeartbeatCounter++;
+		
+			if (!__gatewayIndentityHandshake && __gatewayHeartbeatCounter > 0){
+				__gatewaySendIdentity();	
+			}
+		}else{
+			__gatewayHeartbeatCounter = 0;	
+			var _url = "wss://gateway.discord.gg/?v=10&encoding=json";
+			__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
+			__gatewayConnection = network_connect_raw_async(__gatewaySocket, _url, 443);
+			__gatewayNumberOfDisconnects++;
+			__discordTrace("Connection to gateway lost: reconnecting...");
 		}
 	}
 	
@@ -786,8 +778,27 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 		var _payloadBuffer = buffer_create(0, buffer_grow, 1);
 		buffer_write(_payloadBuffer, buffer_string, _payloadString);
 		var _payloadBufferTrimmed = __trim_buffer(_payloadBuffer);
-		network_send_raw(__gatewaySocket, _payloadBufferTrimmed, buffer_get_size(_payloadBufferTrimmed), network_send_text);
+		//Returns the number of bytes sent or a number less than 0 if it failed
+		var _bytesSent = network_send_raw(__gatewaySocket, _payloadBufferTrimmed, buffer_get_size(_payloadBufferTrimmed), network_send_text);
 		buffer_delete(_payloadBufferTrimmed);		
+		return _bytesSent;
+	}
+	
+	/// presenceSend(activity, status)
+	/// @param activity
+	/// @param status
+	static presenceSend = function(_activities, _status) {
+	    var _payload = {
+	        op: GATEWAY_OP_CODE.presenceUpdate,
+	        d: {
+	            since: int64(date_current_datetime()),
+	            activities: _activities,
+	            status: _status,
+	            afk: false
+	        }
+	    };
+
+	    __gatewayEventSend(_payload);
 	}
 	
 	#endregion	
