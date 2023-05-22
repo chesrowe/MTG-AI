@@ -48,7 +48,7 @@ var _optionTheme = new discordCommandOption(DISCORD_COMMAND_OPTION_TYPE.string, 
 var _optionCardNumber = new discordCommandOption(DISCORD_COMMAND_OPTION_TYPE.integer, "number", "How many cards to generate(Max of 10).", true, -1, -1, -1, 1, 10);
 var _createCardCommand = new discordGuildCommand("generate", "Generate new magic cards based on a theme", DISCORD_COMMAND_TYPE.chatInput, [_optionTheme, _optionCardNumber], DISCORD_PERMISSIONS.sendMessages);
 
-magicBot.guildCommandCreate("1090453953482866738", _createCardCommand, function(){
+magicBot.guildCommandCreate(global.config.serverId, _createCardCommand, function(){
 	//show_message(async_load[? "result"]);	
 });
 
