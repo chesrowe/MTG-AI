@@ -28,12 +28,12 @@ magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
 			switch(_eventData.data.name){
 				case "generate":		
 					var _interactionToken = _eventData.token;
-					global.testInteractionToken = _interactionToken;
+					var _userId = _eventData.member.user.id;
 					var _cardTheme = _eventData.data.options[0].value;
 					var _cardNumber = _eventData.data.options[1].value;
 					
 					obj_controller.magicBot.interactionResponseSend(_eventData.id, _eventData.token, DISCORD_INTERACTION_CALLBACK_TYPE.channelMessageWithSource,  "Card(s) generating (0 of " + string(_cardNumber) + ")");
-					var _newJob = new job(_cardTheme, _cardNumber, _interactionToken);
+					var _newJob = new job(_cardTheme, _cardNumber, _interactionToken, _userId);
 					array_push(jobsInProgressArray, _newJob);
 					var _firstRequest = send_chatgpt_request(card_prompt(_cardTheme));
 					array_push(_newJob.cardTextRequestIdArray, _firstRequest);
@@ -56,6 +56,5 @@ magicBot.guildCommandCreate(global.config.serverId, _createCardCommand, function
 //Card gen jobs
 jobsInProgressArray = [];
 jobsWaitingToBeDrawnAndSentArray = [];
-
 
 

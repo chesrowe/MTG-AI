@@ -53,35 +53,49 @@ repeat(array_length(jobsInProgressArray)){
 				var _response = async_load[? "result"];
 				var _status = async_load[? "status"];
 		
-				if (_response != undefined){
-					var _imageJson = json_parse(_response);
-					var _decodedImage = buffer_base64_decode(_imageJson.artifacts[0].base64);
+				if (is_string(_response)){
+					var _responseData = json_parse(_response);
+					//show_debug_message(_responseData.finish_reason);
+					
+					if (variable_struct_exists(_responseData, "artifacts")){
+						var _decodedImage = buffer_base64_decode(_responseData.artifacts[0].base64);
 			
-					var _imageFilePath = "Card Images/" + _currentTextRequest.cardStruct.name + ".png";
-					buffer_save(_decodedImage, _imageFilePath);
-					buffer_delete(_decodedImage);
+						var _imageFilePath = "Card Images/" + _currentTextRequest.cardStruct.name + ".png";
+						buffer_save(_decodedImage, _imageFilePath);
+						buffer_delete(_decodedImage);
 					
-					var _cardImageTextPair = new cardWaitingToBeDrawn(_currentTextRequest.cardStruct, _imageFilePath);
-					array_push(_currentJob.cardsWaitingToBeDrawn, _cardImageTextPair);
-					magicBot.interactionResponseEdit(_currentJob.interactionToken, "Card(s) generating (" + string(array_length(_currentJob.cardsWaitingToBeDrawn)) + " of " + string(_currentJob.cardNumber) + ")", function(){
-						//show_message(async_load[? "result"]);	
-					});
+						var _cardImageTextPair = new cardWaitingToBeDrawn(_currentTextRequest.cardStruct, _imageFilePath);
+						array_push(_currentJob.cardsWaitingToBeDrawn, _cardImageTextPair);
+						magicBot.interactionResponseEdit(_currentJob.interactionToken, "Card(s) generating (" + string(array_length(_currentJob.cardsWaitingToBeDrawn)) + " of " + string(_currentJob.cardNumber) + ")", function(){
+							//show_message(async_load[? "result"]);	
+						});
 					
-					if (array_length(_currentJob.cardsWaitingToBeDrawn) >= _currentJob.cardNumber){
-						array_push(jobsWaitingToBeDrawnAndSentArray, _currentJob);
-						array_push(_markedForDeletion, _i);
+						if (array_length(_currentJob.cardsWaitingToBeDrawn) >= _currentJob.cardNumber){
+							array_push(jobsWaitingToBeDrawnAndSentArray, _currentJob);
+							array_push(_markedForDeletion, _i);
+						}else{
+							var _nextCardTextRequest = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));
+							array_push(_currentJob.cardTextRequestIdArray, _nextCardTextRequest);
+						}
 					}else{
-						var _nextCardTextRequest = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));
-						array_push(_currentJob.cardTextRequestIdArray, _nextCardTextRequest);
+						var _response = async_load[? "result"];
+						_currentJob.imageRequestFailures++;			
 					}
-				}		
+				}
 			}catch(_error){
 				show_debug_message("Failed to generate Image, resending request...");
 				discord_error(_error);
 				//Try and send off another
-				var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _currentTextRequest.cardStruct.name + "," + _currentTextRequest.cardStruct.imageDescription);
-				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _currentTextRequest.cardStruct);
-				_currentJob.imageRequestArray[_j] = _imageRequestStruct; 
+				_currentJob.imageRequestFailures++;
+				
+				if (_currentJob.imageRequestFailures < 5){
+					var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _currentTextRequest.cardStruct.name + "," + _currentTextRequest.cardStruct.imageDescription);
+					var _imageRequestStruct = new cardImageRequest(_imageRequestId, _currentTextRequest.cardStruct);
+					_currentJob.imageRequestArray[_j] = _imageRequestStruct; 
+				}else{
+					array_push(jobsWaitingToBeDrawnAndSentArray, _currentJob);
+					array_push(_markedForDeletion, _i);		
+				}
 			}	
 			
 			break;

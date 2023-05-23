@@ -103,7 +103,7 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 		show_debug_message(async_load[? "result"]);	
 	}
 	
-	magicBot.interactionResponseEdit(_currentJob.interactionToken, "Cards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, -1, -1, -1, _completedCardImages);
+	magicBot.interactionResponseEdit(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, -1, -1, -1, _completedCardImages);
 	_i++;
 }
 

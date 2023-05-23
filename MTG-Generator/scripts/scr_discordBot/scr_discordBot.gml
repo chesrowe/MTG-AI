@@ -373,7 +373,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	/// @param {string} emoji The url-encoded emoji to remove
 	/// @param {function} callback The function to execute for the request's response. Default: -1
 	static messageReactionDelete = function(_channelId, _messageId, _emoji, _callback = -1){
-		__discord_send_http_request_standard("channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + _emoji + "/@me", "DELETE", -1, __botToken, _callback);
+		__discord_send_http_request_standard("channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + __url_encode(_emoji) + "/@me", "DELETE", -1, __botToken, _callback);
 	}
 
 	#endregion
