@@ -103,7 +103,11 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 		show_debug_message(async_load[? "result"]);	
 	}
 	
-	magicBot.interactionResponseEdit(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, -1, -1, -1, _completedCardImages);
+	var _exportComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Export Cards", -1, "exportButton");
+	var _generateComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Generate More", -1, "generateButton");
+	var _actionRow = new discordMessageComponent(DISCORD_COMPONENT_TYPE.actionRow, -1, "Options", -1, "actionRow", "", [_exportComponent, _generateComponent]);
+	
+	magicBot.interactionResponseFollowUp(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, [_actionRow], -1, -1, _completedCardImages);
 	_i++;
 }
 

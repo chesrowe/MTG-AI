@@ -20,7 +20,7 @@ global.testInteractionToken = -1;
 errorBot = new discordBot(global.config.errorBotToken, global.config.errorApplicationId, false);
 magicBot = new discordBot(global.config.MTGBotToken, global.config.MTGApplicationId, true);
 magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
-	var _event = __discord_gateWay_event_parse();
+	var _event = discord_gateWay_event_parse();
 	var _eventData = _event.d;	
 	
 	switch(_eventData.type){
@@ -43,6 +43,12 @@ magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
 	}
 }
 
+//magicBot.gatewayEventCallbacks[$ "MESSAGE_CREATE"] = function(){
+//    var _event = discord_gateWay_event_parse();
+//    var _eventData = _event.d;
+//    //show_debug_message("New message: " + string(_eventData.content));
+//}
+
 //Add card generation command to bot
 var _optionTheme = new discordCommandOption(DISCORD_COMMAND_OPTION_TYPE.string, "theme", "The theme that the cards will be generated based on.", true);
 var _optionCardNumber = new discordCommandOption(DISCORD_COMMAND_OPTION_TYPE.integer, "number", "How many cards to generate(Max of 10).", true, -1, -1, -1, 1, 10);
@@ -51,7 +57,6 @@ var _createCardCommand = new discordGuildCommand("generate", "Generate new magic
 magicBot.guildCommandCreate(global.config.serverId, _createCardCommand, function(){
 	//show_message(async_load[? "result"]);	
 });
-
 
 //Card gen jobs
 jobsInProgressArray = [];

@@ -26,17 +26,17 @@ function send_chatgpt_request(_prompt) {
 	var _dataJson = json_stringify(_data);
 	show_debug_message("Text data: " +_dataJson);
 
-    // Replace "your_OPENAI_API_KEY" with your actual API key
+    //Headeres
     ds_map_add(_headers, "Authorization", "Bearer " + global.config.openAiKey);
     ds_map_add(_headers, "Content-Type", "application/json");
 
     // Send the POST request
-    var _request_id = http_request(_url, "POST", _headers, _dataJson);
+    var _requestId = http_request(_url, "POST", _headers, _dataJson);
 
     // Clean up the headers map
     ds_map_destroy(_headers);
 
-    return _request_id;
+    return _requestId;
 }
 
 /**
@@ -60,12 +60,12 @@ function send_dalle_request(_prompt) {
     ds_map_add(_headers, "Content-Type", "application/json");
 
     // Send the POST request
-    var _request_id = http_request(_url, "POST", _headers, _dataJson);
+    var _requestId = http_request(_url, "POST", _headers, _dataJson);
 
     // Clean up the headers map
     ds_map_destroy(_headers);
 
-    return _request_id;
+    return _requestId;
 }
 
 /**
@@ -99,12 +99,12 @@ function send_stableDiffusion_request(_prompt) {
 
 
     // Send the POST request
-    var _request_id = http_request(_url, "POST", _headers, _dataJson);
+    var _requestId = http_request(_url, "POST", _headers, _dataJson);
 
     // Clean up the headers map
     ds_map_destroy(_headers);
 
-    return _request_id;
+    return _requestId;
 }
 
 function get_stableDiffusion_models() {
@@ -118,12 +118,12 @@ function get_stableDiffusion_models() {
     ds_map_add(_headers, "Authorization", "Bearer " + string(global.config.stabilityAiKey));
 
     // Send the POST request
-    var _request_id = http_request(_url, "GET", _headers, _dataJson);
+    var _requestId = http_request(_url, "GET", _headers, _dataJson);
 
     // Clean up the headers map
     ds_map_destroy(_headers);
 
-    return _request_id;
+    return _requestId;
 }
 
 /// @function parse_magic_symbols(text)

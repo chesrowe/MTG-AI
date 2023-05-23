@@ -22,7 +22,7 @@ repeat(array_length(obj_discordController.botArray)){
 				break;
 
 			case network_type_data:
-				var _receivedData = __discord_gateWay_event_parse();
+				var _receivedData = discord_gateWay_event_parse();
 		
 				// Store the sequence number if it exists
 				if (_receivedData.s != pointer_null) {
@@ -34,7 +34,7 @@ repeat(array_length(obj_discordController.botArray)){
 				    case GATEWAY_OP_CODE.hello:
 						_currentBot.__gatewaySendHeartbeat();
 				        var _heartbeatInterval = floor(_receivedData.d.heartbeat_interval / 1000);  // Convert ms to seconds
-						show_debug_message(_heartbeatInterval);
+						__discordTrace("Heartbeat interval: " + string(_heartbeatInterval));
 						//Create a Time Source to send heartbeats
 						var _heartbeatTimeSource = time_source_create(
 					        time_source_global,

@@ -225,7 +225,7 @@ function __discordTrace(_text){
 }
 
 /// @desc Parses async_load and returns a struct containing the data
-function __discord_gateWay_event_parse(){
+function discord_gateWay_event_parse(){
 	var _buffer = async_load[? "buffer"];
 	buffer_seek(_buffer, buffer_seek_start, 0);
 
