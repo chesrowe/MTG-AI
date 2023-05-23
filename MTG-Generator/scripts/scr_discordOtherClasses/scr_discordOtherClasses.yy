@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_discordSystemFunctions",
+  "name": "scr_discordOtherClasses",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "System",
-    "path": "folders/Libraries/GMDiscord/System.yy",
+    "name": "GMDiscord",
+    "path": "folders/Libraries/GMDiscord.yy",
   },
 }

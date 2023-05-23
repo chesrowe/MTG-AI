@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_discordGatewayEvents",
+  "name": "scr_discordSystemEnums",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "GMDiscord",
-    "path": "folders/Libraries/GMDiscord.yy",
+    "name": "System",
+    "path": "folders/Libraries/GMDiscord/System.yy",
   },
 }

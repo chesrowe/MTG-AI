@@ -1,17 +1,17 @@
-#macro USE_DALLE false
-
 randomize();
 
 var _configPath = "C:/Users/madma/OneDrive/Desktop/MTG-AI/config.json"
 global.config = json_load(_configPath);
 global.emptyStruct = {};
 
+#region chatgpt_request_send(prompt)
+
 /**
  * Sends a request to the ChatGPT API with the given prompt.
  * @param {string} prompt - The prompt to send to the ChatGPT API.
  * @returns The request ID associated with the API call.
  */
-function send_chatgpt_request(_prompt) {
+function chatgpt_request_send(_prompt) {
     var _url = "https://api.openai.com/v1/completions";
     var _headers = ds_map_create();
     var _data = {
@@ -39,12 +39,16 @@ function send_chatgpt_request(_prompt) {
     return _requestId;
 }
 
+#endregion
+
+#region dalle_request_send(prompt)
+
 /**
  * Sends a request to the Dalle API with the given prompt.
  * @param {string} prompt - The prompt to send to the Dalle-2 API.
  * @returns The request ID associated with the API call.
  */
-function send_dalle_request(_prompt) {
+function dalle_request_send(_prompt) {
     var _url = "https://api.openai.com/v1/images/generations";
     var _headers = ds_map_create();
     var _data = {
@@ -68,26 +72,29 @@ function send_dalle_request(_prompt) {
     return _requestId;
 }
 
+#endregion
+
+#region stableDiffusion_request_send(prompt)
+
 /**
  * Sends a request to the Stable Diffusion API with the given prompt.
  * @param {string} prompt - The prompt to send to the Stable-Diffusion API.
  * @returns The request ID associated with the API call.
  */
-function send_stableDiffusion_request(_prompt) {
-	var _xl = "stable-diffusion-xl-beta-v2-2-2"
+function stableDiffusion_request_send(_prompt) {
     var _url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/text-to-image";
     var _headers = ds_map_create();
     var _data = {
-				text_prompts: [
-					{
-						text : string(_prompt + ". Magic the Gathering, Highly detailed, gothic, dark fantasy, realistic digital painting, masterpiece, 4K. By Christopher Rush"),
-					}
-				],
-				samples : int64(1),
-				height : int64(512),
-				width : int64(512),
-				steps : int64(150)
+		text_prompts: [
+			{
+				text : string(_prompt + ". Magic the Gathering, Highly detailed, gothic, dark fantasy, realistic digital painting, masterpiece, 4K. By Christopher Rush"),
 			}
+		],
+		samples : int64(1),
+		height : int64(512),
+		width : int64(512),
+		steps : int64(150)
+	}
 			
 	var _dataJson = json_stringify(_data);
 	show_debug_message("Image data: " + _dataJson);
@@ -107,27 +114,31 @@ function send_stableDiffusion_request(_prompt) {
     return _requestId;
 }
 
-function get_stableDiffusion_models() {
+#endregion
+
+#region stableDiffusion_get_models()
+
+function stableDiffusion_get_models() {
     var _url = "https://api.stability.ai/v1/engines/list";
     var _headers = ds_map_create();
-    var _data = { }
+    var _data = {}
 			
 	var _dataJson = json_stringify(_data);
-	show_debug_message("Image data: " + _dataJson);
-
     ds_map_add(_headers, "Authorization", "Bearer " + string(global.config.stabilityAiKey));
 
-    // Send the POST request
     var _requestId = http_request(_url, "GET", _headers, _dataJson);
 
-    // Clean up the headers map
     ds_map_destroy(_headers);
 
     return _requestId;
 }
 
+#endregion
+
+#region parse_magic_symbols(text)
+
 /// @function parse_magic_symbols(text)
-/// @param text The input text containing symbols
+/// @param {string} text The input text containing symbols
 /// @returns The output string with sprite names and color codes
 function parse_magic_symbols(text) {
     var _output = "";
@@ -162,8 +173,8 @@ function parse_magic_symbols(text) {
 					break;
                 default:
                     if (string_digits(_nextChar)) {
-                        var num = real(_nextChar);
-                        _spriteName = "spr_manaColorless" + string(num);
+                        var _num = real(_nextChar);
+                        _spriteName = "spr_manaColorless" + string(_num);
                     }
                     break;
             }
@@ -184,9 +195,14 @@ function parse_magic_symbols(text) {
     return _output;
 }
 
-/// @function export_to_cockatrice(cards, file_name)
-/// @param cards An array of card structs
-/// @param file_name The name of the XML file to save
+#endregion
+
+#region export_to_cockatrice(cards, fileName)
+
+/// @function export_to_cockatrice(cards, fileName)
+/// @desc Exports cards in a XML format compatible with Cockatrice
+/// @param {array} cards An array of card structs
+/// @param {string} fileName The name of the XML file to save
 function export_to_cockatrice(cards, fileName) {
     var _xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     _xml += "<cockatrice_carddatabase version=\"4\">\n";
@@ -263,9 +279,7 @@ function export_to_cockatrice(cards, fileName) {
 	file_text_close(_file);
 }
 
-global.lastMessageId = "";
-global.lastUserMessageId = ""; 
-global.lastBotMessageId = "";
+#endregion
 
 /// @func json_load(filePath)
 /// @desc Loads a json file and parses in as a struct then returns that struct or -1 if failed
@@ -276,7 +290,6 @@ function json_load(_filePath){
 	if (_buff != -1){
 		var _str = buffer_read(_buff, buffer_text);
 		buffer_delete(_buff);
-		//var _parsedJson =  json_parse(_str);
 		var _parsedJson = json_parse(_str);
 		return is_struct(_parsedJson) ? _parsedJson : -1;
 	}else{
@@ -291,7 +304,8 @@ function discord_error(_error){
 	_errorMessage += "```\r\n" + _error.script + "\r\n```\r\n";
 	_errorMessage += "Error\r\n"
 	_errorMessage += "```\r\n" + _error.longMessage + "\r\n```\r\n";
-	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);		
+	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);
+	show_message(_error.longMessage);
 }
 
 exception_unhandled_handler(discord_error);

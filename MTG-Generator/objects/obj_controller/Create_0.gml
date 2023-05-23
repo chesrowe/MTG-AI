@@ -35,7 +35,7 @@ magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
 					obj_controller.magicBot.interactionResponseSend(_eventData.id, _eventData.token, DISCORD_INTERACTION_CALLBACK_TYPE.channelMessageWithSource,  "Card(s) generating (0 of " + string(_cardNumber) + ")");
 					var _newJob = new job(_cardTheme, _cardNumber, _interactionToken, _userId);
 					array_push(jobsInProgressArray, _newJob);
-					var _firstRequest = send_chatgpt_request(card_prompt(_cardTheme));
+					var _firstRequest = chatgpt_request_send(card_prompt(_cardTheme));
 					array_push(_newJob.cardTextRequestIdArray, _firstRequest);
 					break;
 			}

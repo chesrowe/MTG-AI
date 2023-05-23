@@ -26,13 +26,13 @@ repeat(array_length(jobsInProgressArray)){
 				var _cardDataStruct = json_parse(_generatedText);
 				array_push(_currentJob.cardTextArray, _cardDataStruct);
 	
-				var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _cardDataStruct.name + "," + _cardDataStruct.imageDescription);
+				var _imageRequestId = stableDiffusion_request_send(_currentJob.theme + "," + _cardDataStruct.name + "," + _cardDataStruct.imageDescription);
 				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _cardDataStruct);
 				array_push(_currentJob.imageRequestArray, _imageRequestStruct);
 		   }catch(_error){
 				show_debug_message("Failed to generate text");
 				discord_error(_error);
-				_currentJob.cardTextRequestIdArray[_j] = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));	
+				_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray));	
 		   }
 		   
 		   break;
@@ -74,7 +74,7 @@ repeat(array_length(jobsInProgressArray)){
 							array_push(jobsWaitingToBeDrawnAndSentArray, _currentJob);
 							array_push(_markedForDeletion, _i);
 						}else{
-							var _nextCardTextRequest = send_chatgpt_request(card_prompt(_currentJob.theme, _currentJob.cardTextArray));
+							var _nextCardTextRequest = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray));
 							array_push(_currentJob.cardTextRequestIdArray, _nextCardTextRequest);
 						}
 					}else{
@@ -89,7 +89,7 @@ repeat(array_length(jobsInProgressArray)){
 				_currentJob.imageRequestFailures++;
 				
 				if (_currentJob.imageRequestFailures < 5){
-					var _imageRequestId = send_stableDiffusion_request(_currentJob.theme + "," + _currentTextRequest.cardStruct.name + "," + _currentTextRequest.cardStruct.imageDescription);
+					var _imageRequestId = stableDiffusion_request_send(_currentJob.theme + "," + _currentTextRequest.cardStruct.name + "," + _currentTextRequest.cardStruct.imageDescription);
 					var _imageRequestStruct = new cardImageRequest(_imageRequestId, _currentTextRequest.cardStruct);
 					_currentJob.imageRequestArray[_j] = _imageRequestStruct; 
 				}else{
