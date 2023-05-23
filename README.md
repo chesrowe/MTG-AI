@@ -1,8 +1,9 @@
 # MTG-AI
-Generate brand new magic cards with ChatGPT and Stable Diffusion via Discord.
+Generate brand new magic cards with ChatGPT and Stable Diffusion via a Discord bot.
 - Will generate cards based on almost any theme in batches of 1 - 10 cards.
 - Uses a Discord interface similar to Midjourney
-- Cards can be exported to Cockatrice so they can be played with.
+- Cards can be exported to Cockatrice so they can be played with(More formats planned).
+- Uses my open-source [Discord library](https://github.com/chesrowe/GMDiscord) for GameMaker
 
 ## Disclaimer
 This AI Magic the Gathering Card Generator is an unofficial, fan-made project created for entertainment purposes only. It is not affiliated with, endorsed, sponsored, or approved by Wizards of the Coast LLC, the creator and publisher of the Magic: The Gathering trading card game.
@@ -16,13 +17,13 @@ By using this Project, users agree to acknowledge that the Project is not endors
 This Project is provided "as is" and "as available" without warranties of any kind, either express or implied, including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the creator of this Project be liable for any direct, indirect, incidental, special, consequential, or punitive damages whatsoever arising out of the use of, or inability to use, the Project or its generated content.
 
 ## Setup
-### Create Discord Application
+### Create Discord Applications
 You will need to setup two Discord applications [here](https://discord.com/developers/applications/) and add them to your server.
 One will be for handling the card generation commands and the other will be for error logging. For example "MTG Bot" and "Error Bot".
 They will need permissions to send messages, edit messages, and create server commands.
 
 ### API Keys
-MTG-AI uses the [ChatGPT API]() and the [Stability Ai API]() to generate the cards, so an API key for each must be provided.
+MTG-AI uses the [ChatGPT API](https://platform.openai.com/docs/api-reference/) and the [Stability Ai API](https://api.stability.ai/docs) to generate the cards, so an API key for each must be provided.
 
 Find your API keys for each here:
 - [Stability Ai keys](https://dreamstudio.ai/account)
@@ -46,6 +47,6 @@ An example `config.json` would be:
 ```
 
 ### Generating Cards
-Once your GameMaker "server" is connected to the Discord Gateway, it should 
+Once your GameMaker program is connected to the Discord Gateway, it should automatically register the `/generate` command to your Discord server. You can then use `/generate` to start generating cards. 
 
 
