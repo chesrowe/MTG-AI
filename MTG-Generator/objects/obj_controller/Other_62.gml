@@ -26,7 +26,15 @@ repeat(array_length(jobsInProgressArray)){
 				var _cardDataStruct = json_parse(_generatedText);
 				array_push(_currentJob.cardTextArray, _cardDataStruct);
 	
-				var _imageRequestId = stableDiffusion_request_send(_currentJob.theme + "," + _cardDataStruct.name + "," + _cardDataStruct.imageDescription);
+				var _imagePrompt = "";
+				
+				if (!_currentJob.excludeThemeInImageGen){				
+					_imagePrompt += _currentJob.theme + ", ";	
+				}
+				
+				_imagePrompt += _cardDataStruct.name + ", " + _cardDataStruct.imageDescription;
+				
+				var _imageRequestId = stableDiffusion_request_send(_imagePrompt);
 				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _cardDataStruct);
 				array_push(_currentJob.imageRequestArray, _imageRequestStruct);
 		   }catch(_error){

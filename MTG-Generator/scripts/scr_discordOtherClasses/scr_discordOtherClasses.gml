@@ -2,7 +2,7 @@
    Below are the most important ones, although not all are present yet and some arguments requiring a JSON object may need to be passed as a struct created on the spot.
 */
 
-/// @func discordGuildCommand(name, description, type, options, defaultMemberPermissions, [dmPermission], [defaultPermission], [nsfw])
+/// @func discordGuildCommand(name, description, type, [options], [defaultMemberPermissions], [dmPermission], [defaultPermission], [nsfw])
 /// @desc Constructs a new guildCommand object.
 /// @param {string} name The name of the command.
 /// @param {string} description The description of the command.
@@ -12,7 +12,7 @@
 /// @param {bool} dmPermission Whether the command is available in DMs.
 /// @param {bool} defaultPermission Whether the command is enabled by default.
 /// @param {bool} nsfw Whether the command is age-restricted.
-function discordGuildCommand(_name, _description, _type, _options, _defaultMemberPermissions, _dmPermission = true, _defaultPermission = true, _nsfw = false) constructor {
+function discordGuildCommand(_name, _description, _type, _options = [], _defaultMemberPermissions = DISCORD_PERMISSIONS.administrator, _dmPermission = true, _defaultPermission = true, _nsfw = false) constructor {
     name = _name;
     description = _description;
     type = _type;
@@ -77,63 +77,6 @@ function discordCommandOption(_type, _name, _description, _required, _choices = 
     
 	if (_autocomplete){
 		autocomplete = _autocomplete;
-	}
-}
-
-/// @func discordMessageComponent(type, [style], [label], [emoji], [customId], [url], [options])
-/// @desc Creates a new Discord message component.
-/// @param {enum.ComponentType} type - The component type (ActionRow, Button, SelectMenu).
-/// @param {enum.ButtonStyle} style - The button style (Primary, Secondary, Success, Danger, Link).
-/// @param {string} label - The visible text on the button.
-/// @param {struct.emoji} emoji - The emoji object with "name", "id", and "animated" properties.
-/// @param {string} customId - The custom identifier for the component.
-/// @param {string} url - The URL for the Link button style (Link).
-/// @param {Array} components Array of sub-components
-/// @param {Array} options - The options for the Select Menu component (array of discordMessageComponent structs with "label", "value", "description", "emoji", and "default" properties).
-function discordMessageComponent(_type, _style = -1, _label = "", _emoji = -1, _customId = "id", _url = "", _components = -1, _options = -1) constructor {
-    // Component type (ActionRow, Button, SelectMenu)
-    type = _type;
-
-    // Button Style (Primary, Secondary, Success, Danger, Link)
-	if (_style != -1){
-		style = _style;
-	}
-
-    // Button Label (visible text on the button)
-    label = _label;
-
-    // Emoji object with "name", "id", and "animated" properties
-	if (_emoji != -1){
-		emoji = _emoji;
-	}
-
-    // Custom identifier for the component
-    custom_id = _customId;
-
-    // URL for Link button style (Link)
-    if (_url != ""){
-		url = _url;
-	}
-	
-	// Sub-components
-	if (_components != -1){
-		components = _components;
-	}
-
-    // Options for the Select Menu component (array of discordMessageComponentOption structs 
-	if (_options != -1){
-		options = _options;
-	}
-}
-
-/// @func discordMessageComponentOption(label, value, description, emoji);
-function discordMessageComponentOption(_label, _value = "", _description = "", _emoji = -1) constructor {
-	label = _label;
-	value = _value; 
-	description = _description; 
-	
-	if (_emoji != -1){
-		emoji = _emoji;	
 	}
 }
 

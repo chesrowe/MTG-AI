@@ -3,7 +3,7 @@
 /// @param {real} cardNumber The number of cards being generated with the given theme
 /// @param {string} interactionToken The token for the initial interaction response to the generate command
 /// @param {string} userId The id of the user who sent the generate command
-function job(_theme, _cardNumber, _interactionToken, _userId = -1) constructor{
+function job(_theme, _cardNumber, _interactionToken, _userId = -1, _excludeThemeInImageGen = false) constructor{
 	theme = _theme;
 	cardNumber = _cardNumber;
 	cardsLeft = cardNumber;
@@ -14,6 +14,7 @@ function job(_theme, _cardNumber, _interactionToken, _userId = -1) constructor{
 	cardsWaitingToBeDrawn = [];
 	completeCards = [];
 	imageRequestFailures = 0;
+	excludeThemeInImageGen = _excludeThemeInImageGen;
 	userId = _userId;
 }
 

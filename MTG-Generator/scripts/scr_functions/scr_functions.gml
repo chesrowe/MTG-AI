@@ -17,7 +17,7 @@ function chatgpt_request_send(_prompt) {
     var _data = {
 				model: "text-davinci-003",
 				prompt: string(_prompt), 
-				max_tokens: int64(1024), 
+				max_tokens: int64(2000), 
 				n: int64(1), 
 				stop: "null", 
 				temperature: 0.7
@@ -305,10 +305,10 @@ function discord_error(_error){
 	_errorMessage += "Error\r\n"
 	_errorMessage += "```\r\n" + _error.longMessage + "\r\n```\r\n";
 	obj_controller.errorBot.messageSend(global.config.errorChannelId, _errorMessage);
-	show_message(_error.longMessage);
+	//show_message(_error.longMessage);
 }
 
-exception_unhandled_handler(discord_error);
+//exception_unhandled_handler(discord_error);
 
 function card_prompt(_theme, _previousCards = []){
 	var _prompt = "Create an idea for a new Magic the Gathering card with the theme of " + _theme + ". Explore all aspects and characters of the theme, not just the main ones. Be creative with card abilites, come up with new ones. Generate cards of any type. Give me the card data as valid JSON and ONLY include the valid JSON and nothing else.\nOnly give me the following properties: \nname, type, subtype, power(if the card is not a creature set this to -1), toughness(if the card is not a creature set this to -1), manaCost(with each mana type with curly braces such as {3}{W}{R}), abilities(as an array), rulings(as an array), flavorText, imageDescription(A highly detailed description of the image that is on the card. It will be used to generate an image with DALLE-2. DO NOT mention the word 'card' in the imageDescription), rarity, and cardFrameSprite(This will be the sprite that is drawn for the card frame to make it match the mana color of the card, this can ONLY be one of the following: spr_cardFrameBlue, spr_cardFrameWhite, spr_cardFrameBlack, spr_cardFrameRed, or spr_cardFrameGreen).";	

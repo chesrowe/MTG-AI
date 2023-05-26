@@ -103,11 +103,13 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 		show_debug_message(async_load[? "result"]);	
 	}
 	
-	var _exportComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Export Cards", -1, "exportButton");
-	var _generateComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Generate More", -1, "generateButton");
-	var _actionRow = new discordMessageComponent(DISCORD_COMPONENT_TYPE.actionRow, -1, "Options", -1, "actionRow", "", [_exportComponent, _generateComponent]);
+	var _exportComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Export Cards", "exportButton");
+	var _generateComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Generate More", "generateButton");
+	var _actionRow = new discordMessageComponent(DISCORD_COMPONENT_TYPE.actionRow, -1, "Options", "actionRow", -1, "", [_exportComponent, _generateComponent]);
+	//In case the user inputs a stupidly long theme
+	var _trimmedTheme = string_copy(_currentJob.theme, 0, 1500);
 	
-	magicBot.interactionResponseFollowUp(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_currentJob.theme), _completedCardsEditCallback, [_actionRow], -1, -1, _completedCardImages);
+	magicBot.interactionResponseFollowUp(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_trimmedTheme), _completedCardsEditCallback, [_actionRow], -1, -1, _completedCardImages);
 	_i++;
 }
 
