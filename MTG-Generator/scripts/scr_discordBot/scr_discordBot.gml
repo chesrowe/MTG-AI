@@ -56,7 +56,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 		        // Find any instances of attachment URLs in the embeds
 			    var _authorAttachments = __discord_find_attachments(_embeds, "author", "icon_url", _files);
 				var _footerAttachments = __discord_find_attachments(_embeds, "footer", "icon_url", _files);
-			    var _attachments = array_merge(_authorAttachments, _footerAttachments);
+			    var _attachments = __discord_array_merge(_authorAttachments, _footerAttachments);
 
 			    // Add attachments to the _bodyData struct
 			    if (array_length(_attachments) > 0) {
@@ -348,7 +348,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	/// @param {string} messageId The id of the message to add the reaction to
 	/// @param {string} emoji The emoji to use for the reaction
 	static messageReactionCreate = function(_channelId, _messageId, _emoji, _callback = -1) {	
-		var _urlEnpoint = "channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + __url_encode(_emoji) + "/@me";
+		var _urlEnpoint = "channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + __discord_url_encode(_emoji) + "/@me";
 		__discord_send_http_request_standard(_urlEnpoint, "PUT", -1, __botToken, _callback);
 	}
 
@@ -363,7 +363,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	/// @param {string} emoji The url-encoded emoji to remove
 	/// @param {function} callback The function to execute for the request's response. Default: -1
 	static messageReactionDelete = function(_channelId, _messageId, _emoji, _callback = -1){
-		__discord_send_http_request_standard("channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + __url_encode(_emoji) + "/@me", "DELETE", -1, __botToken, _callback);
+		__discord_send_http_request_standard("channels/" + _channelId + "/messages/" + _messageId + "/reactions/" + __discord_url_encode(_emoji) + "/@me", "DELETE", -1, __botToken, _callback);
 	}
 
 	#endregion
@@ -634,6 +634,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	}
 	
 	__gatewayHeartbeatCounter = 0;
+	__gatewayHeartbeatTimeSource = -1;
 	__gatewayIndentityHandshake = false;
 	__gatewaySequenceNumber = -1;
 	__gatewayResumeUrl = "";
@@ -854,13 +855,14 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 			network_destroy(__gatewaySocket);
 			__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
 			__gatewayConnection = network_connect_raw_async(__gatewaySocket, _url, 443);
+			__gatewayIndentityHandshake = false;
 			__gatewayNumberOfDisconnects++;
 			__discordTrace("Connection to gateway lost: reconnecting...");
 		}
 	}
 	
 	/// @func __gatewaySendIdentity()
-	/// @desc after a heartbeat is established with the gateway, an indentity must be sent to finish setting up the connection
+	/// @desc after a heartbeat is established with the gateway, an identity must be sent to finish setting up the connection
 	function __gatewaySendIdentity() {
 		var _botToken = __botToken;
 	
@@ -886,7 +888,7 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 		var _payloadString = json_stringify(_payloadStruct);
 		var _payloadBuffer = buffer_create(0, buffer_grow, 1);
 		buffer_write(_payloadBuffer, buffer_string, _payloadString);
-		var _payloadBufferTrimmed = __trim_buffer(_payloadBuffer);
+		var _payloadBufferTrimmed = __discord_gateway_trim_buffer(_payloadBuffer);
 		//Returns the number of bytes sent or a number less than 0 if it failed
 		var _bytesSent = network_send_raw(__gatewaySocket, _payloadBufferTrimmed, buffer_get_size(_payloadBufferTrimmed), network_send_text);
 		buffer_delete(_payloadBufferTrimmed);		

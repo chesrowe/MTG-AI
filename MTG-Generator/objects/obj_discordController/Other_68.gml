@@ -45,8 +45,14 @@ repeat(array_length(obj_discordController.botArray)){
 						_currentBot.__gatewaySendHeartbeat();
 				        var _heartbeatInterval = floor(_receivedData.d.heartbeat_interval / 1000);  // Convert ms to seconds
 						__discordTrace("Heartbeat interval: " + string(_heartbeatInterval));
+						
+						//Make sure a heartbeat timesource doesn't already exist
+						if (time_source_exists(_currentBot.__gatewayHeartbeatTimeSource)){
+							time_source_destroy(_currentBot.__gatewayHeartbeatTimeSource);		
+						}
+						
 						//Create a Time Source to send heartbeats
-						var _heartbeatTimeSource = time_source_create(
+						_currentBot.__gatewayHeartbeatTimeSource = time_source_create(
 					        time_source_global,
 					        _heartbeatInterval,
 					        time_source_units_seconds,
@@ -54,7 +60,7 @@ repeat(array_length(obj_discordController.botArray)){
 							[],
 							-1
 				        );
-				        time_source_start(_heartbeatTimeSource);					
+				        time_source_start(_currentBot.__gatewayHeartbeatTimeSource);					
 				        break;
 				
 					//Discord acknowledges each heartbeat sent over the gateway
@@ -72,8 +78,21 @@ repeat(array_length(obj_discordController.botArray)){
 					case DISCORD_GATEWAY_OP_CODE.reconnect:
 						__discordTrace("Reconnect required, attempting...");
 						network_destroy(_currentBot.__gatewaySocket);
+						_currentBot.__gatewayNumberOfDisconnects++;
 						_currentBot.__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
-						_currentBot.__gatewayConnection = network_connect_raw_async(_currentBot.__gatewaySocket, _currentBot.__gatewayResumeUrl + "?v=10&encoding=json", 443);
+						_currentBot.__gatewayConnection = network_connect_raw_async(_currentBot.__gatewaySocket, _currentBot.__gatewayResumeUrl, 443);
+						
+						//Send resume gateway event to discord
+						var _resumeData = {
+							op: int64(6),
+							d: {
+								token: _currentBot.__botToken,
+								session_id: _currentBot.__gatewaySessionId,
+								seq: _currentBot.__gatewaySequenceNumber
+							}
+						}
+						
+						_currentBot.__gatewayEventSend(_resumeData);
 						break;
 				
 					//Identity handshakes and normal gateway events sent from your discord app

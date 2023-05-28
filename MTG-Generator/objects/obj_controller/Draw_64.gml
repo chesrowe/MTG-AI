@@ -45,35 +45,38 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 			}
 		
 		
+			//Title
 			var _titleText = scribble("[fnt_cardName]" + _namefontColor + "[fa_left]" + _currentCardStruct.name);
 			_titleText.draw(85 + _xOrg, 60 + _yOrg);
-			var _cardType = scribble("[fnt_cardName]" + _typeFontColor + "[fa_left]" + string(_currentCardStruct.type) + " - " + string(_currentCardStruct.subtype));
+			
+			//Type
+			var _typeText = "[fnt_cardName]" + _typeFontColor + "[fa_left]" + string(_currentCardStruct.type);
+			_typeText += (_currentCardStruct.subtype != "") ?  " - " + string(_currentCardStruct.subtype) : "";
+			var _cardType = scribble(_typeText);
 			_cardType.draw(85 + _xOrg, 590 + _yOrg);
-			scribble("[fa_right]" + string(parse_magic_symbols(_currentCardStruct.manaCost))).draw(678 + _xOrg, 60 + _yOrg);
+			
+			//Mana cost
+			if (_currentCardStruct.manaCost != ""){
+				scribble("[fa_right]" + string(parse_magic_symbols(_currentCardStruct.manaCost))).draw(678 + _xOrg, 60 + _yOrg);
+			}
 	
 			var _concatedAbilityText = "";
 		
 			var _i = 0;
 		
 			repeat(array_length(_currentCardStruct.abilities)){
-				_concatedAbilityText += _currentCardStruct.abilities[_i] + "\n\n";
+				_concatedAbilityText += _currentCardStruct.abilities[_i] + "\n";
 			
 				_i++;	
 			}
 		
-			var _abilityScribble = scribble("[fnt_cardText][c_black]" + parse_magic_symbols(_concatedAbilityText));
-			_abilityScribble.fit_to_box(570, 200);
+			var _abilityText = "[fnt_cardText][c_black]" + parse_magic_symbols(_concatedAbilityText);
+			var _flavorText = "\n[fnt_cardFlavorText][c_black]" + _currentCardStruct.flavorText;
+			var _abilityFlavorScribble = scribble(_abilityText + _flavorText);
+			_abilityFlavorScribble.fit_to_box(570, 270);
 			//_abilityScribble.line_spacing("100%");
 		
-			_abilityScribble.draw(100 + _xOrg, 645 + _yOrg);
-		
-			var _flavorScribble = scribble("[fnt_cardFlavorText][c_black]" + _currentCardStruct.flavorText);
-			_flavorScribble.fit_to_box(570, 190);
-			//_flavorScribble.origin(0, 0);
-			//_flavorScribble.skew(0.5, 0);
-			//_flavorScribble.line_spacing("100%");
-		
-			_flavorScribble.draw(100 + _xOrg, 860 + _yOrg);
+			_abilityFlavorScribble.draw(100 + _xOrg, 645 + _yOrg);		
 		
 			if (_currentCardStruct.toughness != -1){
 				var _powerToughness = scribble("[fnt_cardName]" + _powerFontColor + "[fa_right]" + string(_currentCardStruct.power) + "/" + string(_currentCardStruct.toughness));
@@ -97,7 +100,7 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 		array_push(_completedCardImages, _completedCardAttachment);
 		_j++;
 	}
-	
+
 	//Send the completed card images for this job to Discord
 	var _completedCardsEditCallback = function(){
 		show_debug_message(async_load[? "result"]);	

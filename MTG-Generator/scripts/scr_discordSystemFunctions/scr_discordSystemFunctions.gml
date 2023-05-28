@@ -48,9 +48,11 @@ function __discord_error_print(_jsonString) {
             _message += "\nMessage: " + string(_response.message);
         }
 
-        if (is_struct(_response.errors) && variable_struct_exists(_response, "errors")) {
-            _message += "\nErrors:";
-            _message += processErrorStruct(_response.errors, "  ");
+        if (variable_struct_exists(_response, "errors")) {
+			if (is_struct(_response.errors)){
+	            _message += "\nErrors:";
+	            _message += __discord_process_error_struct(_response.errors, "  ");
+			}
         }
 
         show_debug_message(_message);
@@ -59,7 +61,7 @@ function __discord_error_print(_jsonString) {
 
 /// @param _errorStruct struct
 /// @param _indentation string
-function processErrorStruct(_errorStruct, _indentation) {
+function __discord_process_error_struct(_errorStruct, _indentation) {
     var _result = "";
     var _nextIndentation = _indentation + "  ";
     var _keys = variable_struct_get_names(_errorStruct);
@@ -70,10 +72,10 @@ function processErrorStruct(_errorStruct, _indentation) {
         _result += "\n" + _indentation + string(_key) + ":";
         
         if (is_struct(_value)) {
-            _result += processErrorStruct(_value, _nextIndentation);
+            _result += __discord_process_error_struct(_value, _nextIndentation);
         } else if (is_array(_value)) {
             for (var _j = 0; _j < array_length(_value); ++_j) {
-                _result += processErrorStruct(_value[_j], _nextIndentation);
+                _result += __discord_process_error_struct(_value[_j], _nextIndentation);
             }
         } else {
             _result += " " + string(_value);
@@ -82,52 +84,6 @@ function processErrorStruct(_errorStruct, _indentation) {
 
     return _result;
 }
-
-
-
-
-///// @Func __discord_error_print(json)
-///// @param {string} discordResponse The JSON response from the Discord API
-//function __discord_error_print(_discordResponse){
-//    var _error = json_parse(_discordResponse);
-//	var _errorMessageToOutput = "Something is wrong with your HTTP request!\n"; 
-    
-//    // Check if the main error fields exist
-//    if (variable_struct_exists(_error, "code") && variable_struct_exists(_error, "message")) {
-//        _errorMessageToOutput += "Error Code: " + string(_error.code) + "\n";
-//        _errorMessageToOutput += "Message: " + _error.message  + "\n";
-//    }
-    
-//    // Check if the 'errors' object exists
-//    if (variable_struct_exists(_error, "errors")) {
-//        var _errorDetails = _error.errors;
-        
-//        // Iterate over the keys in the 'errors' struct
-//        var _keys = variable_struct_get_names(_errorDetails);
-//        for (var i = 0; i < array_length(_keys); i++) {
-//            var _key = _keys[i];
-//            var _detail = variable_struct_get(_errorDetails, _key);
-            
-//            // Check if the detail error fields exist
-//            if (variable_struct_exists(_detail, "_errors")) {
-//                var _errorsArray = _detail._errors;
-                
-//                // Iterate over the errors in the '_errors' array
-//                for (var j = 0; j < array_length(_errorsArray); j++) {
-//                    var _errorItem = _errorsArray[j];
-                    
-//                    // Check if the error item fields exist
-//                    if (variable_struct_exists(_errorItem, "code") && variable_struct_exists(_errorItem, "message")) {
-//                        _errorMessageToOutput += "Detail Error Code: " + string(_errorItem.code) + "\n";
-//                        _errorMessageToOutput += "Detail Message: " + _errorItem.message + "\n";
-//                    }
-//                }
-//            }
-//        }
-//    }
-	
-//	__discordTrace(_errorMessageToOutput);
-//}
 
 /// @func __discord_add_request_to_sent(requestId,[callback])
 /// @desc Adds a new http request to the requestCallbacks array in the Discord controller object
@@ -222,11 +178,11 @@ function __discord_find_attachments(_embeds, _property, _subProperty, _files) {
 	return _attachments;
 }
 
-/// @func __url_encode(string)
+/// @func __discord_url_encode(string)
 /// @desc URL-encodes the given string
 /// @param {string} string The string to be URL-encoded
 /// @return {string} The URL-encoded string
-function __url_encode(_str) {
+function __discord_url_encode(_str) {
 	var _encodedStr = "";
 	var _strLength = string_length(_str);
 
@@ -238,11 +194,11 @@ function __url_encode(_str) {
 			_encodedStr += _char;
 		} else {
 			// Encode the character as a percent-encoded string
-			var _byteArray = __string_unicode_to_byte_array(_char);
+			var _byteArray = __discord_string_unicode_to_byte_array(_char);
 			var _byteArrayLength = array_length(_byteArray);
 
 			for (var _j = 0; _j < _byteArrayLength; _j++) {
-				var _hex = string_upper(string(__base_convert(_byteArray[_j], 10, 16)));
+				var _hex = string_upper(string(__discord_base_convert(_byteArray[_j], 10, 16)));
 				if (string_length(_hex) < 2) {
 					_hex = "0" + _hex;
 				}
@@ -254,11 +210,11 @@ function __url_encode(_str) {
 	return _encodedStr;
 }
 
-/// @func __string_unicode_to_byte_array(str)
+/// @func __discord_string_unicode_to_byte_array(string)
 /// @desc Converts a Unicode string to a byte array using UTF-8 encoding
-/// @param {string} str The Unicode string to be converted
+/// @param {string} string The Unicode string to be converted
 /// @return {array} The byte array representing the UTF-8 encoded string
-function __string_unicode_to_byte_array(_str) {
+function __discord_string_unicode_to_byte_array(_str) {
 	var _byteArray = [];
 	var _strLength = string_length(_str);
 
@@ -285,13 +241,13 @@ function __string_unicode_to_byte_array(_str) {
 	return _byteArray;
 }
 
-/// @func __base_convert(number, fromBase, toBase)
+/// @func __discord_base_convert(number, fromBase, toBase)
 /// @desc Converts a number from one base to another
 /// @param {real} number The number to be converted
 /// @param {real} fromBase The base of the input number
 /// @param {real} toBase The base to convert the number to
 /// @return {string} The number converted to the target base
-function __base_convert(_number, _fromBase, _toBase) {
+function __discord_base_convert(_number, _fromBase, _toBase) {
 	var _digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var _result = "";
 
@@ -318,11 +274,12 @@ function __base_convert(_number, _fromBase, _toBase) {
 	return _result;
 }
 
-/// @function __trim_buffer(inputBuffer)
-/// @description Trims trailing 00 bytes from a buffer
+/// @func __discord_gateway_trim_buffer(inputBuffer)
+/// @desc Trims trailing `00` bytes from a buffer, the Discord gateway refuses to take packets that have trailing `00` bytes.
+/// Writing a string to a buffer in GML will produce these "blank" bytes at the end for some reason or maybe i'm just stupid, idk?
 /// @param {id.buffer} inputBuffer The buffer to trim
 /// @return {id.buffer} The trimmed buffer
-function __trim_buffer(inputBuffer) {
+function __discord_gateway_trim_buffer(inputBuffer) {
     var bufferSize = buffer_get_size(inputBuffer);
     var trimmedSize = bufferSize;
 
@@ -401,7 +358,7 @@ function __discord_send_http_request_standard(_endpoint, _requestMethod, _reques
 function __discord_send_http_request_multipart(_endpoint, _requestMethod, _requestBody, _files, _botToken, _callback = -1){
     // Prepare the url and headers
     var _baseUrl = "https://discord.com/api/v10/" + _endpoint;
-    var _boundary = "----GMLBoundary" + string(random(1000000000));
+    var _boundary = "----GMLBoundary" + string(irandom(1000000000));
     var _headers = ds_map_create();
     ds_map_add(_headers, "Content-Type", "multipart/form-data; boundary=" + _boundary);
     ds_map_add(_headers, "Authorization", "Bot " + _botToken);
@@ -445,6 +402,25 @@ function __discord_send_http_request_multipart(_endpoint, _requestMethod, _reque
     // Cleanup
     ds_map_destroy(_headers);
 }
+
+/// @description __discord_array_merge(...)
+/// @param {array} ... An arbitrary number of arrays
+function __discord_array_merge() {
+    var merged = [];
+
+    for (var i = 0; i < argument_count; ++i) {
+        var current_array = argument[i];
+
+        if (is_array(current_array)) {
+            for (var j = 0; j < array_length(current_array); ++j) {
+                array_push(merged, current_array[j]);
+            }
+        }
+    }
+
+    return merged;
+}
+
 
 
 
