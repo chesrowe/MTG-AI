@@ -1,0 +1,11 @@
+{
+    "MTGBotToken" : "",
+    "MTGApplicationId" : "",
+    "openAiKey" : "",
+    "stabilityAiKey" : "",
+    "MTGChannelId" : "",
+    "errorBotToken" : "",
+    "errorApplicationId" : "",
+    "errorChannelId" : "",
+    "serverId" : ""
+}

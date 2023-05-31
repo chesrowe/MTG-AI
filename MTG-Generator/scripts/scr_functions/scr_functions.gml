@@ -2,7 +2,7 @@
 
 randomize();
 
-var _configPath = "C:/Users/madma/OneDrive/Desktop/MTG-AI/config.json"
+var _configPath = "config.json"
 global.config = json_load(_configPath);
 global.emptyStruct = {};
 
