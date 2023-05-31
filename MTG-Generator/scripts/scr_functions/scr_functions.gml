@@ -1,3 +1,5 @@
+#macro CHATGPT_TEMPERATURE_DEFAULT 1.0
+
 randomize();
 
 var _configPath = "C:/Users/madma/OneDrive/Desktop/MTG-AI/config.json"
@@ -12,7 +14,7 @@ global.emptyStruct = {};
  * @param {real} temperature - How random the text output will be, higher = more random (ranges 0.1 to 2).
  * @returns The request ID associated with the API call.
  */
-function chatgpt_request_send(_prompt, _temperature = 1.0) {
+function chatgpt_request_send(_prompt, _temperature = CHATGPT_TEMPERATURE_DEFAULT) {
     var _url = "https://api.openai.com/v1/completions";
     var _headers = ds_map_create();
     var _data = {
@@ -173,7 +175,7 @@ function parse_magic_symbols(text) {
 					_spriteName = "spr_tap"
 					break;
                 default:
-                    if (string_digits(_nextChar)) {
+                    if (string_digits(_nextChar) != "") {
                         var _num = real(_nextChar);
                         _spriteName = "spr_manaColorless" + string(_num);
                     }
@@ -246,12 +248,16 @@ function export_to_cockatrice(cards, fileName) {
         _xml += "    <card>\n";
         _xml += "      <name>" + _card.name + "</name>\n";
         _xml += "      <text>";
-        for (var _j = 0; _j < array_length(_card.abilities); ++_j) {
-            if (_j > 0) {
-                _xml += "\n";
-            }
-            _xml += _card.abilities[_j];
-        }
+		try {
+			for (var _j = 0; _j < array_length(_card.abilities); ++_j) {
+	            if (_j > 0) {
+	                _xml += "\n";
+	            }
+	            _xml += _card.abilities[_j];
+	        }
+		}catch(_error){
+			_xml += "\n";	
+		}
         _xml += "</text>\n";
         _xml += "      <prop>\n";
         _xml += "        <type>" + _card.type;
@@ -371,6 +377,55 @@ function returned_card_struct_is_valid(_cardStruct){
 	//If nothing has managed to return something, the card must be valid
 	return true;
 }
+
+/// @function export_button_parse_UUID(input)
+/// @description Parse the theme from a string
+/// @param {string} input The input string
+/// @return {string} The parsed theme
+function export_button_parse_UUID(input) {
+    var themeStart = "Set ID: ";
+    var pos = string_pos(themeStart, input);
+    if (pos > 0) {
+        var theme = string_copy(input, pos + string_length(themeStart), string_length(input) - pos - string_length(themeStart) + 1);
+        return theme;
+    } else {
+        return "No UUID found";
+    }
+}
+
+
+/// @function export_button_parse_theme(inputString)
+/// @description Parses the theme from a given input string.
+/// @param {string} inputString The input string to parse.
+/// @returns {string} The parsed theme.
+function export_button_parse_theme(inputString) {
+    var themeStart = string_pos("Theme: ", inputString) + string_length("Theme: ");
+    var themeEnd = string_pos("\nSet ID:", inputString) - 1;
+    var theme = string_copy(inputString, themeStart, themeEnd - themeStart + 1);
+    return theme;
+}
+
+
+/// @function UUID_generate()
+/// @description Generate a pseudo-random UUID
+/// @return {string} The generated UUID
+function UUID_generate() {
+    var _chars = "0123456789abcdef";
+    var _uuid = "";
+    for (var _i = 0; _i < 36; _i++) {
+        if (_i == 8 || _i == 13 || _i == 18 || _i == 23) {
+            _uuid += "-";
+        } else if (_i == 14) {
+            _uuid += "4";
+        } else if (_i == 19) {
+            _uuid += choose("8", "9", "a", "b");
+        } else {
+            _uuid += string_char_at(_chars, irandom_range(1, 16));
+        }
+    }
+    return _uuid;
+}
+
 
 
 

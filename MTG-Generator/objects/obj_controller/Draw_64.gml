@@ -112,7 +112,12 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 	//In case the user inputs a stupidly long theme
 	var _trimmedTheme = string_copy(_currentJob.theme, 0, 1500);
 	
-	magicBot.interactionResponseFollowUp(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_trimmedTheme), _completedCardsEditCallback, [_actionRow], -1, -1, _completedCardImages);
+	magicBot.interactionResponseFollowUp(_currentJob.interactionToken, "<@" + string(_currentJob.userId) + ">\nCards completed!\nTheme: " + string(_trimmedTheme) + "\nSet ID: " + _currentJob.UUID, _completedCardsEditCallback, [_actionRow], -1, -1, _completedCardImages);
+	
+	//Add this job to the finished jobs array and export the card data
+	array_push(jobsFinished, _currentJob);
+	export_to_cockatrice(_currentJob.cardTextArray, "Card Exports/" + _currentJob.UUID + ".xml");
+	
 	_i++;
 }
 

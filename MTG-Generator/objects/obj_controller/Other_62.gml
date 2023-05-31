@@ -5,6 +5,7 @@ var _status = async_load[? "status"];
 var _i = 0;
 var _markedForDeletion = [];
 
+// For each active job
 repeat(array_length(jobsInProgressArray)){
 	var _currentJob = jobsInProgressArray[_i];
 	
@@ -41,12 +42,12 @@ repeat(array_length(jobsInProgressArray)){
 					array_push(_currentJob.imageRequestArray, _imageRequestStruct);
 				}else{
 					show_debug_message("Text returned was not vaild.");
-					_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray));		
+					_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray), _currentJob.temperature);		
 				}
 		   }catch(_error){
 				show_debug_message("Failed to generate text");
 				discord_error(_error);
-				_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray));	
+				_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray), _currentJob.temperature);	
 		   }
 		   
 		   break;
