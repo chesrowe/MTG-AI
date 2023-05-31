@@ -24,19 +24,25 @@ repeat(array_length(jobsInProgressArray)){
 				// Process the response data here
 				var _generatedText = _responseData[$ "choices"][0][$ "text"];
 				var _cardDataStruct = json_parse(_generatedText);
-				array_push(_currentJob.cardTextArray, _cardDataStruct);
+				
+				if (returned_card_struct_is_valid(_cardDataStruct)){
+					array_push(_currentJob.cardTextArray, _cardDataStruct);
 	
-				var _imagePrompt = "";
+					var _imagePrompt = "";
 				
-				if (!_currentJob.excludeThemeInImageGen){				
-					_imagePrompt += _currentJob.theme + ", ";	
+					if (!_currentJob.excludeThemeInImageGen){				
+						_imagePrompt += _currentJob.theme + ", ";	
+					}
+				
+					_imagePrompt += _cardDataStruct.name + ", " + _cardDataStruct.imageDescription;
+				
+					var _imageRequestId = stableDiffusion_request_send(_imagePrompt);
+					var _imageRequestStruct = new cardImageRequest(_imageRequestId, _cardDataStruct);
+					array_push(_currentJob.imageRequestArray, _imageRequestStruct);
+				}else{
+					show_debug_message("Text returned was not vaild.");
+					_currentJob.cardTextRequestIdArray[_j] = chatgpt_request_send(card_prompt(_currentJob.theme, _currentJob.cardTextArray));		
 				}
-				
-				_imagePrompt += _cardDataStruct.name + ", " + _cardDataStruct.imageDescription;
-				
-				var _imageRequestId = stableDiffusion_request_send(_imagePrompt);
-				var _imageRequestStruct = new cardImageRequest(_imageRequestId, _cardDataStruct);
-				array_push(_currentJob.imageRequestArray, _imageRequestStruct);
 		   }catch(_error){
 				show_debug_message("Failed to generate text");
 				discord_error(_error);

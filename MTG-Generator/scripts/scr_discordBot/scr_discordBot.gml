@@ -624,15 +624,8 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	#region Gateway event functions
 	
 	//Set up gateway events
-	if (_useGatewayEvents){
-		var _url = "wss://gateway.discord.gg/?v=10&encoding=json";
-		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
-		__gatewayConnection = network_connect_raw_async(__gatewaySocket, _url, 443);	
-	}else{
-		__gatewaySocket = -1;
-		__gatewayConnection = -1;	
-	}
-	
+	__gatewaySocket = -1;
+	__gatewayConnection = -1;	
 	__gatewayHeartbeatCounter = 0;
 	__gatewayHeartbeatTimeSource = -1;
 	__gatewayIndentityHandshake = false;
@@ -640,7 +633,12 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	__gatewayResumeUrl = "";
 	__gatewaySessionId = ""
 	__gatewayNumberOfDisconnects = 0;
+	__gatewayReconnect = false;
 	gatewayEventCallbacks = {};
+	
+	if (_useGatewayEvents){
+		__discord_gateway_new_connection(self);
+	}
 	
 	#region interactionResponseSend(interactionId, interactionToken, callbackType, [content], [callback], [components], [embeds], [tts])
 	
@@ -846,18 +844,16 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 		if (_bytesSent > 0){	
 			__gatewayHeartbeatCounter++;
 		
-			if (!__gatewayIndentityHandshake && __gatewayHeartbeatCounter > 0){
-				__gatewaySendIdentity();	
+			if (__gatewayHeartbeatCounter > 0){
+				if (!__gatewayIndentityHandshake && !__gatewayReconnect){
+					__gatewaySendIdentity();	
+				}else if (__gatewayReconnect){		
+					__gatewaySendResume();
+				}
 			}
 		}else{
-			__gatewayHeartbeatCounter = 0;	
-			var _url = "wss://gateway.discord.gg/?v=10&encoding=json";
-			network_destroy(__gatewaySocket);
-			__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
-			__gatewayConnection = network_connect_raw_async(__gatewaySocket, _url, 443);
-			__gatewayIndentityHandshake = false;
-			__gatewayNumberOfDisconnects++;
 			__discordTrace("Connection to gateway lost: reconnecting...");
+			__discord_gateway_reconnect(self);
 		}
 	}
 	
@@ -880,6 +876,22 @@ function discordBot(_botToken, _applicationId, _useGatewayEvents = false) constr
 	    };
 
 		__gatewayEventSend(_payload);
+	}
+	
+	/// @func __gatewaySendResume()
+	/// @desc Sends a resume event for use after a disconnect
+	function __gatewaySendResume() {
+		//Send resume gateway event to discord
+		var _resumeData = {
+			op: DISCORD_GATEWAY_OP_CODE.resume,
+			d: {
+				token: __botToken,
+				session_id: __gatewaySessionId,
+				seq: int64(__gatewaySequenceNumber)
+			}
+		}
+						
+		__gatewayEventSend(_resumeData);		
 	}
 	
 	/// @func __gatewayEventSend(payloadStruct)

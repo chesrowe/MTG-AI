@@ -421,6 +421,36 @@ function __discord_array_merge() {
     return merged;
 }
 
+/// @desc Establish a new connection to the gateway
+function __discord_gateway_new_connection(_bot){
+	var _gatewayUrl = "wss://gateway.discord.gg/?v=10&encoding=json";
+	
+	with(_bot){
+		if (__gatewaySocket != -1){
+			network_destroy(__gatewaySocket);
+			__gatewayNumberOfDisconnects++;
+		}
+
+		__heartbeatCounter = 0;
+		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
+		__gatewayConnection = network_connect_raw_async(__gatewaySocket, _gatewayUrl, 443);
+		__gatewayReconnect = false;
+		__gatewayIndentityHandshake = false;
+	}
+}
+
+/// @desc Resume a previous gateway session after a disconnect or invalid session
+function __discord_gateway_reconnect(_bot){
+	with(_bot){
+		network_destroy(__gatewaySocket);
+		__gatewayNumberOfDisconnects++;
+		__heartbeatCounter = 0;
+		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
+		__gatewayConnection = network_connect_raw_async(__gatewaySocket, __gatewayResumeUrl, 443);
+		__gatewayReconnect = true;
+	}
+}
+
 
 
 

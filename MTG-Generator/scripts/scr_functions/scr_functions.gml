@@ -9,9 +9,10 @@ global.emptyStruct = {};
 /**
  * Sends a request to the ChatGPT API with the given prompt.
  * @param {string} prompt - The prompt to send to the ChatGPT API.
+ * @param {real} temperature - How random the text output will be, higher = more random (ranges 0.1 to 2).
  * @returns The request ID associated with the API call.
  */
-function chatgpt_request_send(_prompt) {
+function chatgpt_request_send(_prompt, _temperature = 1.0) {
     var _url = "https://api.openai.com/v1/completions";
     var _headers = ds_map_create();
     var _data = {
@@ -20,11 +21,11 @@ function chatgpt_request_send(_prompt) {
 				max_tokens: int64(2000), 
 				n: int64(1), 
 				stop: "null", 
-				temperature: 0.7
+				temperature: _temperature
 			}
 			
 	var _dataJson = json_stringify(_data);
-	show_debug_message("Text data: " +_dataJson);
+	show_debug_message("Text data: " + _data.prompt);
 
     //Headeres
     ds_map_add(_headers, "Authorization", "Bearer " + global.config.openAiKey);
@@ -322,6 +323,53 @@ function card_prompt(_theme, _previousCards = []){
 	}
 	
 	return _prompt;
+}
+
+/// @desc Checks the returned card struct to make sure it has all the properties needed in the right format
+function returned_card_struct_is_valid(_cardStruct){
+	if ((variable_struct_exists(_cardStruct, "name")            &&
+		variable_struct_exists(_cardStruct, "type")             &&
+		variable_struct_exists(_cardStruct, "subtype")          &&
+		variable_struct_exists(_cardStruct, "manaCost")         &&
+		variable_struct_exists(_cardStruct, "abilities")        &&
+		variable_struct_exists(_cardStruct, "flavorText")       &&
+		variable_struct_exists(_cardStruct, "power")            &&
+		variable_struct_exists(_cardStruct, "toughness")        &&
+		variable_struct_exists(_cardStruct, "cardFrameSprite")  &&
+		variable_struct_exists(_cardStruct, "imageDescription"))){		
+		//The only time no ability text is acceptable, is when the card is a land, otherwise the card text is no valid 
+		if (string_lower(_cardStruct.type) == "land"){
+			return true;
+		}else{
+			if(string_lower(_cardStruct.type) == "creature" || string_lower(_cardStruct.type) == "legendary creature"){
+				if (is_numeric(_cardStruct.toughness)){
+					if (_cardStruct.toughness < 1){
+						return false;	
+					}
+				}
+			}
+			
+			if (!is_array(_cardStruct.abilities)){
+				return false;	
+			}
+			
+			//If the ability array is blank
+			if (is_array(_cardStruct.abilities)){
+				if (array_length(_cardStruct.abilities) == 0){
+					return false;	
+				}
+				
+				if (string_length(_cardStruct.abilities[0]) < 2){
+					return false;		
+				}
+			}
+		}
+	}else{
+		return false;	
+	}
+	
+	//If nothing has managed to return something, the card must be valid
+	return true;
 }
 
 
