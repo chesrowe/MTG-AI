@@ -30,7 +30,7 @@ Find your API keys for each here:
 - [OpenAi keys](https://platform.openai.com/account/api-keys)
 
 ### Config file 
-You will need to make a folder called `MTG-AI` on your desktop and create a new text file called `config.json`, this is where all your keys/tokens will be stored.
+You will need to create a JSON file called `config.json` here: `C:\Users\%USERNAME%\AppData\Local\MTG_Generator`, this is where all your keys/tokens will be stored.
 An example `config.json` would be:
 ```json
 {
