@@ -432,7 +432,7 @@ function __discord_gateway_new_connection(_bot){
 		}
 
 		__heartbeatCounter = 0;
-		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
+		__gatewaySocket = network_create_socket(network_socket_wss);
 		__gatewayConnection = network_connect_raw_async(__gatewaySocket, _gatewayUrl, 443);
 		__gatewayReconnect = false;
 		__gatewayIndentityHandshake = false;
@@ -445,7 +445,7 @@ function __discord_gateway_reconnect(_bot){
 		network_destroy(__gatewaySocket);
 		__gatewayNumberOfDisconnects++;
 		__heartbeatCounter = 0;
-		__gatewaySocket = network_create_socket_ext(network_socket_wss, 443);
+		__gatewaySocket = network_create_socket(network_socket_wss);
 		__gatewayConnection = network_connect_raw_async(__gatewaySocket, __gatewayResumeUrl, 443);
 		__gatewayReconnect = true;
 	}
