@@ -202,17 +202,20 @@ function parse_magic_symbols(text) {
 
 #region export_to_cockatrice(cards, fileName)
 
-/// @function export_to_cockatrice(cards, fileName)
+/// @function export_to_cockatrice(cards, fileName, [setName])
 /// @desc Exports cards in a XML format compatible with Cockatrice
 /// @param {array} cards An array of card structs
 /// @param {string} fileName The name of the XML file to save
-function export_to_cockatrice(cards, fileName) {
+function export_to_cockatrice(cards, fileName, _setName = "CustomSet") {
     var _xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     _xml += "<cockatrice_carddatabase version=\"4\">\n";
     _xml += "  <sets>\n";
     _xml += "    <set>\n";
-    _xml += "      <name>MyCustomSet</name>\n";
-    _xml += "      <abbreviation>CS</abbreviation>\n";
+    _xml += "      <name>" + _setName + "</name>\n";
+    _xml += "      <longname>" + _setName + "</longname>\n";
+    _xml += "      <settype>" + "AI Generated" + "</settype>\n";
+    _xml += "      <abbreviation>AI</abbreviation>\n";
+    _xml += "      <releasedate>" + string(current_year) + "-" + string (current_month) + "-" + string(current_day) + "</releasedate>\n";
     _xml += "    </set>\n";
     _xml += "  </sets>\n";
     _xml += "  <cards>\n";
@@ -270,8 +273,12 @@ function export_to_cockatrice(cards, fileName) {
         _xml += "        <cmc>" + string(_cmc) + "</cmc>\n";
         _xml += "        <colors>" + _colors + "</colors>\n";
         _xml += "        <coloridentity>" + _colorIdentity + "</coloridentity>\n";
-        _xml += "        <pt>" + string(_card.power) + "/" + string(_card.toughness) + "</pt>\n";
-	    _xml += "      </prop>\n";
+		
+		if (_card.toughness != -1){
+			_xml += "        <pt>" + string(_card.power) + "/" + string(_card.toughness) + "</pt>\n";
+		}
+	    
+		_xml += "      </prop>\n";
 	    _xml += "      <set rarity=\"" + _card.rarity + "\">CS</set>\n";
 	    _xml += "      <flavor>" + _card.flavorText + "</flavor>\n";
 	    _xml += "    </card>\n";

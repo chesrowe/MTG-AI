@@ -79,12 +79,13 @@ magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
 					}
 					
 					zip_add_file(_exportZipFile, _theme + ".xml", "Card Exports/" + _UUID + ".xml", -1);
+					zip_add_file(_exportZipFile, "_installer.bat", "Card Exports/_card-installer.bat", -1);
 					
 					zip_save(_exportZipFile, "Card Exports/Zips/" + _UUID + ".zip");
 					
 					var _cardArchive = new discordFileAttachment("Card Exports/Zips/" + _UUID + ".zip", _theme + ".zip", "Exported card data for Cockatrice");
 					
-					magicBot.interactionResponseFollowUp(_eventData.token, "<@" + string(_userId) + ">\nExported data data.", -1, -1, -1, -1, [_cardArchive]);
+					magicBot.interactionResponseFollowUp(_eventData.token, "<@" + string(_userId) + ">\nExported card data.", -1, -1, -1, -1, [_cardArchive]);
 					break;
 			}
 			break;

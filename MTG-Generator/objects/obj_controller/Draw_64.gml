@@ -107,8 +107,8 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 	}
 	
 	var _exportComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Export Cards", "exportButton");
-	var _generateComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Generate More", "generateButton");
-	var _actionRow = new discordMessageComponent(DISCORD_COMPONENT_TYPE.actionRow, -1, "Options", "actionRow", -1, "", [_exportComponent, _generateComponent]);
+	//var _generateComponent = new discordMessageComponent(DISCORD_COMPONENT_TYPE.button, DISCORD_BUTTON_STYLE.primary, "Generate More", "generateButton");
+	var _actionRow = new discordMessageComponent(DISCORD_COMPONENT_TYPE.actionRow, -1, "Options", "actionRow", -1, "", [_exportComponent]);
 	//In case the user inputs a stupidly long theme
 	var _trimmedTheme = string_copy(_currentJob.theme, 0, 1500);
 	
@@ -116,7 +116,7 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 	
 	//Add this job to the finished jobs array and export the card data
 	array_push(jobsFinished, _currentJob);
-	export_to_cockatrice(_currentJob.cardTextArray, "Card Exports/" + _currentJob.UUID + ".xml");
+	export_to_cockatrice(_currentJob.cardTextArray, "Card Exports/" + _currentJob.UUID + ".xml", string_copy(_currentJob.theme, 1, 50));
 	
 	_i++;
 }
