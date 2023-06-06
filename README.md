@@ -5,6 +5,8 @@ Generate brand new magic cards with ChatGPT and Stable Diffusion via a Discord b
 - Cards can be exported to Cockatrice so they can be played with(More formats planned).
 - Uses my open-source [Discord library](https://github.com/chesrowe/GMDiscord) for GameMaker
 
+![dfgh](https://www.youtube.com/watch?v=qlLHaYK2yxs)
+
 ## Disclaimer
 This AI Magic the Gathering Card Generator is an unofficial, fan-made project created for entertainment purposes only. It is not affiliated with, endorsed, sponsored, or approved by Wizards of the Coast LLC, the creator and publisher of the Magic: The Gathering trading card game.
 
