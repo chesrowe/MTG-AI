@@ -16,7 +16,7 @@ repeat(array_length(jobsWaitingToBeDrawnAndSentArray)){
 		var _yOrg = -10;
 		//Draw card image 
 		if (sprite_exists(_currentCardImageSprite)){
-			draw_sprite_stretched(_currentCardImageSprite, 0, 92 + _xOrg, 95 + _yOrg, 580, 500);	
+			draw_sprite(_currentCardImageSprite, 0, 92 + _xOrg, 95 + _yOrg);	
 		}			
 		
 		//Draw card text

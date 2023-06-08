@@ -151,6 +151,7 @@
     {"id":{"name":"scribble_color_set","path":"scripts/scribble_color_set/scribble_color_set.yy",},"order":1,},
     {"id":{"name":"spr_manaColorless7","path":"sprites/spr_manaColorless7/spr_manaColorless7.yy",},"order":17,},
     {"id":{"name":"draw_text_scribble","path":"scripts/draw_text_scribble/draw_text_scribble.yy",},"order":0,},
+    {"id":{"name":"spr_manaX","path":"sprites/spr_manaX/spr_manaX.yy",},"order":23,},
     {"id":{"name":"SnapBufferReadGML","path":"scripts/SnapBufferReadGML/SnapBufferReadGML.yy",},"order":0,},
     {"id":{"name":"SnapFromQML","path":"scripts/SnapFromQML/SnapFromQML.yy",},"order":2,},
     {"id":{"name":"SnapBufferWrite2DArray","path":"scripts/SnapBufferWrite2DArray/SnapBufferWrite2DArray.yy",},"order":3,},

@@ -95,7 +95,7 @@ function stableDiffusion_request_send(_prompt) {
 		],
 		samples : int64(1),
 		height : int64(512),
-		width : int64(512),
+		width : int64(576),
 		steps : int64(150)
 	}
 			
@@ -176,6 +176,9 @@ function parse_magic_symbols(text) {
 					break;
 				case "C": 
 					_spriteName = "spr_manaColorless"
+					break;
+				case "X": 
+					_spriteName = "spr_manaX"
 					break;
                 default:
                     if (string_digits(_nextChar) != "") {

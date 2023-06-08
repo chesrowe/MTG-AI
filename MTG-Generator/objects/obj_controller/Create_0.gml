@@ -17,7 +17,7 @@ currentCardStruct = {
 global.testInteractionToken = -1;
 
 //Discord bot setup
-errorBot = new discordBot(global.config.errorBotToken, global.config.errorApplicationId, true);
+errorBot = new discordBot(global.config.errorBotToken, global.config.errorApplicationId, false);
 magicBot = new discordBot(global.config.MTGBotToken, global.config.MTGApplicationId, true);
 magicBot.gatewayEventCallbacks[$ "INTERACTION_CREATE"] = function(){
 	var _event = discord_gateWay_event_parse();
